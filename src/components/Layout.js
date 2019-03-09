@@ -7,6 +7,7 @@ import Voting from './Voting';
 
 export default class Layout extends Component {
   render() {
+    let {sessionActions} = this.props
     return (
       <>
         <Topbar />
@@ -15,8 +16,8 @@ export default class Layout extends Component {
           </Grid.Row> */}
           <Grid.Row>
             <Grid.Column width={6}>
-              <Voting />
               <Player />
+              <Voting sessionActions={sessionActions}/>
             </Grid.Column>
             <Grid.Column width={10}>
               <Game />

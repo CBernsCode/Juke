@@ -7,7 +7,7 @@ export default class Player extends Component{
   render(){
     return (
       <div id="media">
-        <iframe src="https://open.spotify.com/embed/user/nsqx6avzxhybkmfumqb1juwmn/playlist/5OJs7eATLrvZ2Ea9als3lK" width="100%" height="400" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+        <iframe src="https://open.spotify.com/embed/user/nsqx6avzxhybkmfumqb1juwmn/playlist/5OJs7eATLrvZ2Ea9als3lK" width="100%" height="200" frameBorder="0" allowtransparency="true" allow="encrypted-media"></iframe>
       </div>
     )
   }

@@ -11,7 +11,7 @@ import {
 class App extends Component {
   render() {
     return (
-     <Layout />
+     <Layout {...this.props}/>
     );
   }
 }
@@ -25,7 +25,7 @@ const mapStateToProps = store => ({
 const mapDispatchToProps = (dispatch, ownProps) => ({
   acctActions: bindActionCreators(AcctActions, dispatch),
   mediaActions: bindActionCreators(MediaActions, dispatch),
-  seshActions: bindActionCreators(SessionActions, dispatch)
+  sessionActions: bindActionCreators(SessionActions, dispatch)
 })
 
 export default connect(

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Segment } from 'semantic-ui-react';
 
 const GAME_STATUS = {
   notStated: "NOT_STARTED",
@@ -14,9 +15,9 @@ export default class Game extends Component{
   }
   render(){
     return (
-      <div id="game">
-        <h1>Game</h1>
-      </div>
+      <Segment id="game" inverted>
+       <h1>Game</h1>
+      </Segment>
     )
   }
 }
