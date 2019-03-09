@@ -6,14 +6,12 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: #3C415E;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
-}
-.App {
-  text-align: center;
 }
 
 .App-logo {
@@ -23,14 +21,14 @@ code {
 
 .App-header {
   padding: 1em;
-  background-color: #282c34;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  border-bottom: 1px solid #fff;
+  
 }
+
+
 
 .App-link {
   color: #61dafb;
@@ -43,4 +41,33 @@ code {
   to {
     transform: rotate(360deg);
   }
+}
+
+h1, h2, h3, h4 {
+  color: #fff;
+}
+
+.bid-input {
+  margin: 15px 0;
+  width: 8em;
+  height: 3em;
+} 
+
+#voting-list .content{
+  display: flex;
+  justify-content: space-between;
+  margin: 5px;
+}
+
+#voting-list .header img{
+  display: inline;
+}
+
+.song-info {
+  float: right;
+  margin: 1em;
+}
+
+.row {
+  padding: 1rem;
 }
