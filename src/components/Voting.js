@@ -37,25 +37,46 @@ class Voting extends Component {
     super(props)
     this.state = {
       songs: []
-      // chat: sessionRef.ref("/chat/"),
-      // songs: sessionRef.ref("/songs/"),
-      // users: sessionRef.ref("/songs/"),
     }
   }
 
   componentDidMount = () => {
-    let key = firebase.ref("/session").push({
-      // chat: [{msg:"1", msg: "2"}],
-      songs: sampleData,
-      users: ["uid:123", "uid:124", "uid:125"]
-    
-    }).key
-    firebase.ref("/session/").child(key).child("songs").on('value', (snapshot) => {
-      let snap = snapshot.val()  
-      console.log(snap)
-      this.setState({songs: snap})
+    let key = "";
+    if (this.props.sessionKey) {
+      key = this.props.sessionKey;
+    } else {
+      key = firebase.ref("/session").push({
+        // chat: [{msg:"1", msg: "2"}],
+        songs: sampleData,
+        users: ["uid:123", "uid:124", "uid:125"]
+      }).key
+    }
+    this.attachToSession(key)
+
+    // firebase.ref("/session/").child(key).child("songs").on('value', (snapshot) => {
+    //   let snap = snapshot.val()  
+    //   console.log(snap)
+    //   this.setState({songs: snap})
+    // })
+    this.props.sessionActions.startSession({ session: key })
+  }
+
+  componentWillUnmount = () => {
+    this.detachFromSession()
+  }
+
+  attachToSession = (key) => {
+    firebase.ref(`/session/${key}/songs`).on('value', (snapshot) => {
+      let snap = snapshot.val()
+      console.log(snap) // Log for debug
+      this.setState({ songs: snap })
     })
-    this.props.sessionActions.startSession({session: key})
+  }
+
+  detachFromSession = () => {
+    if (!!this.props.session.id) {
+      firebase.ref(`/session/${this.props.session.id}/songs`).on('value', () => { })
+    }
   }
 
   listItem = (song) => (
@@ -64,8 +85,8 @@ class Voting extends Component {
         <List.Header>
           <Image size="tiny" src={albumCover} />
           <div className="song-info">
-            {song.name } <br />
-            {song.artist }
+            {song.name} <br />
+            {song.artist}
           </div>
         </List.Header>
         <Input className="bid-input" size="mini" placeholder='Bid' />
@@ -78,7 +99,7 @@ class Voting extends Component {
       <Segment inverted>
         <List id="voting-list" divided inverted ordered>
           {
-            this.state.songs.map( song => {
+            this.state.songs.map(song => {
               return this.listItem(song)
             })
           }

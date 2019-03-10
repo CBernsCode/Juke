@@ -1,7 +1,7 @@
 import * as AcctActions from '../constants/AccountActions';
 
 const defaultObj = {
-  acctName: "",
+  displayName: "",
   uid: null,
 }
 

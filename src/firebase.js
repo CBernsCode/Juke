@@ -13,3 +13,8 @@ const config = {
 export default firebase.initializeApp(config).database();
 
 export const sessionRef = firebase.database().ref("/sessions")
+export const provider = new firebase.auth.GoogleAuthProvider();
+provider.setCustomParameters({
+  prompt: 'select_account'
+});
+export const auth = firebase.auth();
