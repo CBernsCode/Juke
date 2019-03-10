@@ -71,3 +71,7 @@ h1, h2, h3, h4 {
 .row {
   padding: 1rem;
 }
+
+#game {
+  height: 100%;
+}
