@@ -74,8 +74,12 @@ class Voting extends Component {
   }
 
   detachFromSession = () => {
-    if (!!this.props.session.id) {
-      firebase.ref(`/session/${this.props.session.id}/songs`).on('value', () => { })
+    if (!!this.props.session && this.props.session.id) {
+      try {
+        firebase.ref(`/session/${this.props.session.id}/songs`).on('value', () => { })
+      } catch (error) {
+        throw Error("Was unable to unattach from session ref")
+      }
     }
   }
 
