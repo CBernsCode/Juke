@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { Segment } from 'semantic-ui-react';
+import { Header, Segment } from 'semantic-ui-react'
+import Jumper from './Jumper'
 
 const GAME_STATUS = {
   notStated: "NOT_STARTED",
@@ -16,8 +17,12 @@ export default class Game extends Component{
   render(){
     return (
       <Segment id="game" inverted>
-       <h1>Game</h1>
+        <Header as='h1' textAlign='center'>
+        Game
+        </Header>
+       <Jumper />
       </Segment>
     )
   }
 }
+
