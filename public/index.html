@@ -37,5 +37,17 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+
+    <!--The reason we do this is because React runs on its own copy of 
+      the web page’s HTML (for performance reasons, mostly). So it isn’t 
+      actually able to see the global Spotify variable! Therefore, we add 
+      it to the window object as this can be accesed by React.
+    -->
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <script>
+      window.onSpotifyWebPlaybackSDKReady = () => {
+        window.Spotify = Spotify;
+      }
+    </script>
   </body>
 </html>
