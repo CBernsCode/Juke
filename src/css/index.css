@@ -100,5 +100,5 @@ a.item {
 
 a.item.active {
   color: #fff !important;
-  font-size: 120%;
+  border-color: #33f;
 }
