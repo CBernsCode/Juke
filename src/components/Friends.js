@@ -44,7 +44,7 @@ const Friends = () => (
         <List.Header as='a'>Daniel Louise</List.Header>
         <List.Description>
           Last seen watching{' '}
-          <a>
+          <a href="/">
             <b>Arrested Development</b>
           </a>{' '}
           just now.
@@ -57,7 +57,7 @@ const Friends = () => (
         <List.Header as='a'>Stevie Feliciano</List.Header>
         <List.Description>
           Last seen watching{' '}
-          <a>
+          <a href="/">
             <b>Bob's Burgers</b>
           </a>{' '}
           10 hours ago.
@@ -70,7 +70,7 @@ const Friends = () => (
         <List.Header as='a'>Elliot Fu</List.Header>
         <List.Description>
           Last seen watching{' '}
-          <a>
+          <a href="/">
             <b>The Godfather Part 2</b>
           </a>{' '}
           yesterday.
