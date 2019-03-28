@@ -102,3 +102,19 @@ a.item.active {
   color: #fff !important;
   border-color: #33f;
 }
+
+#game {
+  margin: auto;
+  width: 840px;
+  height: 656px;
+  background-color: black;
+  text-align: center;
+}
+
+button {
+  margin-top: 100px;
+font-family:Arial;
+font-size:15px;
+font-weight:bold;
+padding:8px 29px;
+}
