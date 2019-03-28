@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Header, Segment } from 'semantic-ui-react'
-import Jumper from './Jumper'
-import {gameStart} from '../games/TabBeat'
+import {Jumper} from './Jumper'
+import { gameStart } from '../games/TabBeat'
 // import '../css/TabBeat'
 
 
@@ -19,7 +19,7 @@ export default class Game extends Component {
   }
 
   componentDidMount() {
-    gameStart()
+    // gameStart()
   }
   render() {
     return (
