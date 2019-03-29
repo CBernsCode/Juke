@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import hash from "../actions/Hash";
 import "../css/player.css";
+import SpotifyWebApi from 'spotify-web-api-js';
 
 export default class Player extends Component {
   constructor(props) {
@@ -20,28 +21,44 @@ export default class Player extends Component {
         position: 0,
         duration: 1,
     };
+
+    this.player = new SpotifyWebApi();
   }
 
+  // componentDidMount() {
+  //   debugger
+  //   window.addEventListener('load', this.handleLoad);
+  // }
+
   componentDidMount() {
-    const { token } = this.state.token;
+    debugger
+    // const { token } = this.state.token;
     
-    // if the Spotify SDK has loaded
-    if (window.Spotify !== null) {
-      console.log("creating new Spotify player with token " + token);
-      // create a new player
-      this.player = new window.Spotify.Player({
-        name: "Juke",
-        getOAuthToken: cb => { cb(token); },
-      });
-      // set up the player's event handlers
-      this.createEventHandlers();
+    // // if the Spotify SDK has loaded
+    // if (!!window.Spotify) {
+    //   console.log("creating new Spotify player with token " + token);
+    //   // create a new player
+    //   this.player = new window.Spotify.Player({
+    //     name: "Juke",
+    //     getOAuthToken: cb => { cb(token); },
+    //   });
+    //   // set up the player's event handlers
+    //   this.createEventHandlers();
       
-      // finally, connect!
-      this.player.connect();
-    }
-    else {
-      console.log("window.Spotify is null");
-    }
+    //   // finally, connect!
+    //   this.player.connect();
+    // }
+    // else {
+    //   console.log("window.Spotify is undefined");
+    // }
+
+    
+    this.player.setAccessToken(this.state.token);
+    // this.player.setPromiseImplementation(Q);
+
+    // this.createEventHandlers();
+
+    this.transferPlaybackHere();
   }
 
   
@@ -95,7 +112,6 @@ export default class Player extends Component {
     // Ready
     this.player.on('ready', async data => {
       let { device_id } = data;
-      console.log("Let the music play on!");
       // set the deviceId variable, then let's try
       // to swap music playback to *our* player!
       await this.setState({ deviceId: device_id });
@@ -104,18 +120,23 @@ export default class Player extends Component {
   }
   
   onPrevClick() {
-    this.player.previousTrack();
+    // this.player.previousTrack();
+    this.player.skipToPrevious();
   }
   
   onPlayClick() {
-    this.player.togglePlay();
+    debugger
+    // this.player.togglePlay();
+    (this.state.is_playing) ? this.player.pause() : this.player.play();
   }
   
   onNextClick() {
-    this.player.nextTrack();
+    // this.player.nextTrack();
+    this.player.skipToNext();
   }
   
   transferPlaybackHere() {
+    debugger
     const { deviceId, token } = this.state.token;
     // https://beta.developer.spotify.com/documentation/web-api/reference/player/transfer-a-users-playback/
     fetch("https://api.spotify.com/v1/me/player", {
