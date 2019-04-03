@@ -1,4 +1,7 @@
-// tutorial used: https://levelup.gitconnected.com/how-to-build-a-spotify-player-with-react-in-15-minutes-7e01991bc4b6
+// tutorials used: 
+// https://levelup.gitconnected.com/how-to-build-a-spotify-player-with-react-in-15-minutes-7e01991bc4b6
+// https://medium.com/@jonnykalambay/now-playing-using-spotifys-awesome-api-with-react-7db8173a7b13
+// https://mbell.me/blog/2017-12-29-react-spotify-playback-api/
 
 import React, { Component } from "react";
 import { authEndpoint, clientId, redirectUri, scopes } from "../constants/Config";
@@ -37,7 +40,7 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    // Set token
+    // Get token
     let _token = hash.access_token;
 
     if (_token) {
@@ -52,23 +55,21 @@ export default class App extends Component {
   }
 
   async createPlayer(_token){
-    // await window.Spotify;
-
-    // if the Spotify SDK has loaded
+    // wait for the Spotify SDK to load
     while (!window.Spotify) { 
       await sleep(30)
     }
-      console.log("creating new Spotify player with token " + _token);
-      // create a new player
-      this.player = new window.Spotify.Player({
-        name: "Juke",
-        getOAuthToken: cb => { cb(_token); },
-      });
-      // set up the player's event handlers
-      this.createEventHandlers();
-      
-      // finally, connect!
-      this.player.connect();
+
+    // create a new player
+    this.player = new window.Spotify.Player({
+      name: "Juke",
+      getOAuthToken: cb => { cb(_token); },
+    });
+    // set up the player's event handlers
+    this.createEventHandlers();
+    
+    // finally, connect
+    this.player.connect();
   }
 
   createEventHandlers = () => {
@@ -84,7 +85,6 @@ export default class App extends Component {
     this.player.on('account_error', e => { console.error(e); });
     // loading/playing the track failed for some reason
     this.player.on('playback_error', e => { console.error(e); });
-  
     // Playback status updates
     this.player.on('player_state_changed', state => this.onStateChanged(state));
   
