@@ -6,9 +6,8 @@
 import React, { Component } from "react";
 import { authEndpoint, clientId, redirectUri, scopes } from "../constants/Config";
 import hash from "../actions/Hash";
-// import logo from "./logo.svg";
-// import "./App.css";
-import "../css/player.css";
+// import "../css/player.css";
+import "../css/index.css";
 
 
 function sleep(ms) {
