@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import { Grid } from 'semantic-ui-react'
 import Topbar from './Topbar';
 import Game from './Game';
-import Player from './Player';
+import { Player } from './Player';
+import { Playlist } from './Playlist';
 import Voting from './Voting';
+
+import Tabs from './Tabs'
 
 export default class Layout extends Component {
   render() {
@@ -17,7 +20,7 @@ export default class Layout extends Component {
           <Grid.Row>
             <Grid.Column width={6}>
               <Player />
-              <Voting sessionKey="-L_cQLs_JHhrMruoZBI3" sessionActions={sessionActions}/>
+              <Tabs {...this.props} />
             </Grid.Column>
             <Grid.Column width={10}>
               <Game />

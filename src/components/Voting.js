@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Image, Input, List, Segment } from 'semantic-ui-react';
+import { Image, Input, List, Segment, Button } from 'semantic-ui-react';
 import albumCover from '../static/images/albumTemp.png';
 
 import firebase from '../firebase';
@@ -36,7 +36,8 @@ class Voting extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      songs: []
+      songs: [],
+      bids: [],
     }
   }
 
@@ -68,18 +69,43 @@ class Voting extends Component {
   attachToSession = (key) => {
     firebase.ref(`/session/${key}/songs`).on('value', (snapshot) => {
       let snap = snapshot.val()
+      if(this.state.bids.length < snap.length){
+        Array(snap.length).fill(0)
+      }
       console.log(snap) // Log for debug
       this.setState({ songs: snap })
     })
   }
 
   detachFromSession = () => {
-    if (!!this.props.session.id) {
-      firebase.ref(`/session/${this.props.session.id}/songs`).on('value', () => { })
+    if (!!this.props.session && this.props.session.id) {
+      try {
+        firebase.ref(`/session/${this.props.session.id}/songs`).on('value', () => { })
+      } catch (error) {
+        throw Error("Was unable to detach from session ref")
+      }
     }
   }
 
-  listItem = (song) => (
+  handleMessage = (e, id) => {
+    let bids = this.state.bids
+    bids[id] = e.target.value
+    this.setState({
+      bids
+    })
+    console.log(e.target.value + " " + id);
+  }
+
+  handleSubmit = () => {
+
+    let blank = Array(this.state.songs.length).fill(0)
+    this.setState({
+      bids: blank
+    })
+    console.log("Submitted Bid!")
+  }
+
+  listItem = (song, index) => (
     <List.Item key={song.id}>
       <List.Content>
         <List.Header>
@@ -89,21 +115,37 @@ class Voting extends Component {
             {song.artist}
           </div>
         </List.Header>
-        <Input className="bid-input" size="mini" placeholder='Bid' />
+        <Input
+          value={this.state.bids[index]}
+          onChange={e => this.handleMessage(e, index)}
+          className="bid-input" size="mini" placeholder='Bid' />
       </List.Content>
     </List.Item>
   )
 
   render() {
     return (
-      <Segment inverted>
+      <Segment inverted padded>
         <List id="voting-list" divided inverted ordered>
           {
-            this.state.songs.map(song => {
-              return this.listItem(song)
-            })
+            this.state.songs
+              .sort(function (a, b) { return a.bid > b.bid ? -1 : a.bid < b.bid ? 1 : 0; })
+              .map((song, i )=> {
+                return this.listItem(song, i)
+              })
           }
         </List>
+        <Button 
+          fluid
+          style={{
+            margin: "auto",
+            width:"50%"
+          }}
+          color="green"
+          inverted
+          onClick={ () => this.handleSubmit()} >
+          Bid
+        </Button>
       </Segment>
     )
   }
