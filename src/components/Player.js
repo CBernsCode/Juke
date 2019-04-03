@@ -173,8 +173,9 @@ export default class Player extends Component {
                 <img src={this.state.item.album.images[0].url} />
               </Grid.Column>
               <Grid.Column width={12}>
+                {this.state.item.artists[0].name} <br />
                 {this.state.item.name} <br />
-                {this.state.item.artists[0].name}
+                {this.state.item.album.name} <br />
                 <Button.Group id="player-controls" icon>
                   <Button
                     inverted
