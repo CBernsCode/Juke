@@ -5,6 +5,7 @@
 
 import React, { Component } from "react";
 import { authEndpoint, clientId, redirectUri, scopes } from "../constants/Config";
+import { Button, Grid, Icon, Segment } from 'semantic-ui-react'
 import hash from "../actions/Hash";
 // import "../css/player.css";
 import "../css/index.css";
@@ -14,8 +15,7 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-
-export default class App extends Component {
+export default class Player extends Component {
   constructor() {
     super();
     this.state = {
@@ -26,7 +26,7 @@ export default class App extends Component {
         },
         name: "",
         artists: [{ name: "" }],
-        duration_ms:0,
+        duration_ms: 0,
       },
       is_playing: false,
       progress_ms: 0,
@@ -50,12 +50,12 @@ export default class App extends Component {
       });
 
       this.createPlayer(_token);
-    }    
+    }
   }
 
-  async createPlayer(_token){
+  async createPlayer(_token) {
     // wait for the Spotify SDK to load
-    while (!window.Spotify) { 
+    while (!window.Spotify) {
       await sleep(30)
     }
 
@@ -66,7 +66,7 @@ export default class App extends Component {
     });
     // set up the player's event handlers
     this.createEventHandlers();
-    
+
     // finally, connect
     this.player.connect();
   }
@@ -86,7 +86,7 @@ export default class App extends Component {
     this.player.on('playback_error', e => { console.error(e); });
     // Playback status updates
     this.player.on('player_state_changed', state => this.onStateChanged(state));
-  
+
     // Ready
     this.player.on('ready', async data => {
       let { device_id } = data;
@@ -106,7 +106,7 @@ export default class App extends Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        "device_ids": [ deviceId ],
+        "device_ids": [deviceId],
         // true: start playing music if it was paused on the other device
         // false: paused if paused on other device, start playing music otherwise
         "play": true,
@@ -114,8 +114,8 @@ export default class App extends Component {
     });
   }
 
-   // when we receive a new update from the player
-   onStateChanged = (state) => {
+  // when we receive a new update from the player
+  onStateChanged = (state) => {
     // only update if we got a real state
     if (state !== null) {
       const {
@@ -124,7 +124,7 @@ export default class App extends Component {
         duration,
       } = state.track_window;
       const is_playing = !state.paused;
-      
+
       this.setState({
         position,
         duration,
@@ -140,11 +140,11 @@ export default class App extends Component {
   onPrevClick = () => {
     this.player.previousTrack();
   }
-  
+
   onPlayClick = () => {
     this.player.togglePlay();
   }
-  
+
   onNextClick = () => {
     this.player.nextTrack();
   }
@@ -153,45 +153,63 @@ export default class App extends Component {
     const { is_playing } = this.state;
 
     return (
-      <div className="App">
-        <header className="App-header">
-          {/* Get token */}
-          {!this.state.token && (
-            <a
-              className="btn btn--loginApp-link"
-              href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
-                "%20"
-              )}&response_type=token&show_dialog=true`}
-            >
-              Login to Spotify
+      <Segment id="player" inverted>
+        {/* Get token */}
+        {!this.state.token && (
+          <a
+            className="btn btn--loginApp-link"
+            href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
+              "%20"
+            )}&response_type=token&show_dialog=true`}
+          >
+            Login to Spotify
             </a>
-          )}
-          {/* Display player once token acquired */}
-          {this.state.token && (
-            <div className="App">
-              <div className="main-wrapper">
-                <div className="now-playing__img">
-                  <img src={this.state.item.album.images[0].url} />
-                </div>
-                <div className="now-playing__side">
-                  <div className="now-playing__name">{this.state.item.name}</div>
-                  <div className="now-playing__artist">
-                    {this.state.item.artists[0].name}
-                  </div>
-                  <div className="now-playing__status">
-                    {this.state.is_playing ? "Playing" : "Paused"}
-                  </div>
-                  <p>
-                    <button onClick={() => this.onPrevClick()}>Previous</button>
-                    <button onClick={() => this.onPlayClick()}>{is_playing ? "Pause" : "Play"}</button>
-                    <button onClick={() => this.onNextClick()}>Next</button>
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </header>
-      </div>
+        )}
+        {/* Display player once token acquired */}
+        {this.state.token && (
+          <Grid textAlign='center'>
+            <Grid.Row verticalAlign='middle'>
+              <Grid.Column width={4}>
+                <img src={this.state.item.album.images[0].url} />
+              </Grid.Column>
+              <Grid.Column width={12}>
+                {this.state.item.name} <br />
+                {this.state.item.artists[0].name}
+                <Button.Group id="player-controls" icon>
+                  <Button
+                    inverted
+                    basic
+                    onClick={() => this.onPrevClick()} >
+                    <Icon name='fast backward' />
+                  </Button>
+                  {
+                    is_playing
+                      ? <Button
+                        inverted
+                        basic
+                        onClick={() => this.onPlayClick()}>
+                        <Icon name='pause' />
+                      </Button>
+                      : <Button
+                        inverted
+                        basic
+                        onClick={() => this.onPlayClick()}>
+                        <Icon name='play' />
+                      </Button>
+                  }
+                  <Button
+                    inverted
+                    basic
+                    onClick={() => this.onNextClick()} >
+                    <Icon name='fast forward' />
+                  </Button>
+                </Button.Group>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        )
+        }
+      </Segment>
     );
   }
 }

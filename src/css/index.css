@@ -73,5 +73,48 @@ h1, h2, h3, h4 {
 }
 
 #game {
-  height: 100%;
+  height: 86vh;
+}
+
+.ui.tab {
+  display: none;
+  background: transparent;
+  border: none;
+}
+
+.ui.segment.tab {
+  box-shadow: none;
+}
+
+.description {
+  color: #fff !important;
+}
+
+.ui.pointing.secondary.menu {
+  font-size: 150%;
+}
+
+a.item {
+  color: #fff !important;
+}
+
+a.item.active {
+  color: #fff !important;
+  border-color: #33f;
+}
+
+#game {
+  margin: auto;
+  width: 840px;
+  height: 656px;
+  background-color: black;
+  text-align: center;
+}
+
+button {
+  margin-top: 100px;
+font-family:Arial;
+font-size:15px;
+font-weight:bold;
+padding:8px 29px;
 }
