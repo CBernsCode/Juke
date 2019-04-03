@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Grid } from 'semantic-ui-react'
 import Topbar from './Topbar';
 import Game from './Game';
-import { Player } from './Player';
+import Player from './Player';
 import { Playlist } from './Playlist';
 import Voting from './Voting';
 
