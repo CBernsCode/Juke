@@ -1,12 +1,18 @@
 #player {
     font-size: 120%;
     color: white;
+    text-align: center;
 }
 
 #player .button {
-    padding: .75em 3em;
+    padding: .75em 2em;
 }
 
 #player-controls {
     padding: 10px;
+}
+
+#player-song-info{
+    font-size: 130%;
+    line-height: 150%;
 }

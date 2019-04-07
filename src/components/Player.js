@@ -154,7 +154,7 @@ export default class Player extends Component {
     const { is_playing } = this.state;
 
     return (
-      <Segment id="player" inverted>
+      <Segment id="player" inverted padded={false}>
         {/* Get token */}
         {!this.state.token && (
           <a
@@ -170,12 +170,15 @@ export default class Player extends Component {
         {this.state.token && (
           <Grid textAlign='center'>
             <Grid.Row verticalAlign='middle'>
-              <Grid.Column width={4}>
-                <img src={this.state.item.album.images[0].url} />
+              <Grid.Column width={6}>
+                <img src={this.state.item.album.images[0].url} /><br />
+                {this.state.item.album.name}
               </Grid.Column>
-              <Grid.Column width={12}>
-                {this.state.item.name} <br />
-                {this.state.item.artists[0].name}
+              <Grid.Column width={10}>
+                <div id="player-song-info">
+                  {this.state.item.name} <br />
+                  {this.state.item.artists[0].name}
+                </div>
                 <Button.Group id="player-controls" icon>
                   <Button
                     inverted
