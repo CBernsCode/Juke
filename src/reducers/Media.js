@@ -1,7 +1,8 @@
 import * as MediaActions from '../constants/MediaActions';
 
 const defaultObj = {
-  media: null
+  playlist: [],
+  token: null,
 }
 
 
@@ -9,11 +10,23 @@ export default function mediaReducer(state = defaultObj, action ){
   switch (action.type) {
     case MediaActions.ADD_TO_PLAYLIST:
       return {
-        ...action.payload
+        ...state,
+        playlist: !!state.playlist && state.push(action.payload),
       }
     case MediaActions.LOAD_PLAYLIST:
       return {
-        ...defaultObj
+        ...state,
+        playlist: [...action.payload]
+      }
+    case MediaActions.CLEAR_PLAYLIST:
+      return {
+        ...defaultObj,
+        token: state.token,
+      }
+    case MediaActions.SAVE_TOKEN:
+      return {
+        ...state,
+        token: action.payload
       }
     default:
       return { ...state };

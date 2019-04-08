@@ -1,3 +1,5 @@
 export const ADD_TO_PLAYLIST = "ADD_TO_PLAYLIST";
 export const EXPORT_PLAYLIST = "EXPORT_PLAYLIST";
 export const LOAD_PLAYLIST = "LOAD_PLAYLIST";
+export const SAVE_TOKEN = "SAVE_TOKEN";
+export const CLEAR_PLAYLIST = "CLEAR_PLAYLIST";
