@@ -19,11 +19,11 @@ export default class Layout extends Component {
           </Grid.Row> */}
           <Grid.Row>
             <Grid.Column width={6}>
-              <Player />
+              <Player {...this.props}/>
               <Tabs {...this.props} />
             </Grid.Column>
             <Grid.Column width={10}>
-              <Game />
+              <Game {...this.props}/>
             </Grid.Column>
           </Grid.Row>
         </Grid>
