@@ -3,7 +3,7 @@ import { Tab } from 'semantic-ui-react'
 
 import Voting from './Voting'
 import Friends from './Friends'
-import { Playlist } from './Playlist'
+import Playlist from './Playlist'
 
 
 const Tabs = ({ sessionActions }) => {

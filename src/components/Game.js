@@ -31,7 +31,7 @@ export default class Game extends Component {
           <h1 id="header">Tap Beat Game</h1>
           <p>Objective: Tap the buttons in the given time period.</p>
 
-          <button onclick="gameStart()">Start</button>
+          <button onClick="gameStart()">Start</button>
         </div>
         {/* <Jumper /> */}
       </Segment>

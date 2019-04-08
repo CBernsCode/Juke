@@ -53,6 +53,10 @@ export default class Player extends Component {
     }
   }
 
+  getToken = () => {
+    return this.state.token;
+  }
+
   async createPlayer(_token) {
     // wait for the Spotify SDK to load
     while (!window.Spotify) {
@@ -109,7 +113,7 @@ export default class Player extends Component {
         "device_ids": [deviceId],
         // true: start playing music if it was paused on the other device
         // false: paused if paused on other device, start playing music otherwise
-        "play": true,
+        "play": false,
       }),
     });
   }
@@ -156,14 +160,19 @@ export default class Player extends Component {
       <Segment id="player" inverted>
         {/* Get token */}
         {!this.state.token && (
-          <a
-            className="btn btn--loginApp-link"
+          <Button 
+            fluid
+            style={{
+              margin: "auto",
+              width:"50%"
+            }}
+            color="green"
+            inverted
             href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
               "%20"
-            )}&response_type=token&show_dialog=true`}
-          >
+            )}&response_type=token&show_dialog=true`}>
             Login to Spotify
-            </a>
+          </Button>
         )}
         {/* Display player once token acquired */}
         {this.state.token && (
@@ -211,6 +220,7 @@ export default class Player extends Component {
         )
         }
       </Segment>
+
     );
   }
 }
