@@ -19,9 +19,19 @@ const fetchPlaylist = () => {
   }
 }
 
+const saveToken = (token) => {
+  return { type: MediaActions.SAVE_TOKEN, payload: token}
+}
+
+export const clearPlaylist = () => { 
+  return { type: MediaActions.CLEAR_PLAYLIST }
+}
+
 export default {
   addToPlaylist,
   exportPlaylist,
   loadPlaylist,
-  fetchPlaylist
+  fetchPlaylist,
+  saveToken,
+  clearPlaylist,
 }
