@@ -8,10 +8,12 @@ let pLocation;
 let canvas;
 
 export default function sketch(p) {
+  window.p = p
   let rotation = 0;
+  let b = new Bullet(0,50,6)
 
   p.setup = function () {
-    p.createCanvas(600, 400, p.WEBGL);
+    p.createCanvas(600, 400,);
   };
 
   p.myCustomRedrawAccordingToNewPropsHandler = function (props) {
@@ -20,15 +22,32 @@ export default function sketch(p) {
     }
   };
 
+  let xPos = 10
   p.draw = function () {
     p.background(100);
     p.noStroke();
-    p.push();
-    p.rotateY(rotation);
-    p.box(100);
-    p.pop();
+    b.draw(p)
   };
 };
+
+class Bullet {
+
+  constructor(x,y,speed = 2){
+    this.x = x
+    this.y = y + (Math.random() * 200)
+    this.speed = speed
+  }
+
+  draw = (p) => {
+    p.fill('#000000')
+    this.x = this.x + this.speed
+    if(this.x > p.width){
+      this.x  = 0 
+      this.y = this.y + (Math.random() * 200)
+    }
+    p.rect(this.x, this.y, 10,4);
+  }
+}
 
 
 // //file for handling the survival game
