@@ -38,13 +38,16 @@ class Voting extends Component {
     this.state = {
       songs: [],
       bids: [],
+      pointBalance: 1000,
     }
   }
 
   componentDidMount = () => {
+    const sessionId = this.props.sesh.session
+    // debugger
     let key = "";
-    if (this.props.sessionKey) {
-      key = this.props.sessionKey;
+    if (sessionId) {
+      key = sessionId
     } else {
       key = firebase.ref("/session").push({
         // chat: [{msg:"1", msg: "2"}],
@@ -53,12 +56,6 @@ class Voting extends Component {
       }).key
     }
     this.attachToSession(key)
-
-    // firebase.ref("/session/").child(key).child("songs").on('value', (snapshot) => {
-    //   let snap = snapshot.val()  
-    //   console.log(snap)
-    //   this.setState({songs: snap})
-    // })
     this.props.sessionActions.startSession({ session: key })
   }
 
@@ -66,13 +63,9 @@ class Voting extends Component {
     this.detachFromSession()
   }
 
-  attachToSession = (key) => {
-    firebase.ref(`/session/${key}/songs`).on('value', (snapshot) => {
+  attachToSession = (token) => {
+    firebase.ref(`/session/${token}/songs`).on('value', (snapshot) => {
       let snap = snapshot.val()
-      if(this.state.bids.length < snap.length){
-        Array(snap.length).fill(0)
-      }
-      console.log(snap) // Log for debug
       this.setState({ songs: snap })
     })
   }
@@ -88,20 +81,37 @@ class Voting extends Component {
   }
 
   handleMessage = (e, id) => {
-    let bids = this.state.bids
-    bids[id] = e.target.value
-    this.setState({
-      bids
-    })
+    let {bids, pointBalance } = this.state
+    let bid = e.target.value
+    if( !!bid && bid > 0 && (pointBalance - bid > 0)){
+      bids[id] = bid
+      pointBalance -= bid
+      this.setState({
+        bids,
+        pointBalance,
+      })
+    } else {
+      bids[id] = 0
+      this.setState({
+        bids,
+      })
+    }
     console.log(e.target.value + " " + id);
   }
 
   handleSubmit = () => {
+    const { bids } = this.state
 
-    let blank = Array(this.state.songs.length).fill(0)
-    this.setState({
-      bids: blank
+    bids.forEach((bid, index) => {
+      firebase.ref(`/session/${this.props.sesh.session}/songs/${index}/bid/`).push(Number(bid));
+      // newPostRef.set(bid)
     })
+
+    this.setState({
+      bids: Array(this.state.songs.length).fill(0)
+    })
+    this.getTotals()
+
     console.log("Submitted Bid!")
   }
 
@@ -126,6 +136,19 @@ class Voting extends Component {
       </List.Content>
     </List.Item>
   )
+
+  getTotals = () => {
+    firebase.ref(`/session/${this.props.sesh.session}/songs`).once('value').then(snapshot => {
+      let snap = snapshot.val()
+      !!snap && snap.map( song => {
+        let sum = 0;
+        Object.keys(song.bid).forEach(key => {
+          sum += Number(song.bid[key])
+        })
+        console.log(sum)
+      })
+    })
+  }
 
   render() {
     return (

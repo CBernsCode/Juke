@@ -32,18 +32,19 @@ export default function sketch(p) {
 
 class Bullet {
 
-  constructor(x,y,speed = 2){
+  constructor(x,y,speed = 2, color = "#000000"){
     this.x = x
     this.y = y + (Math.random() * 200)
     this.speed = speed
+    this.color = color
   }
 
   draw = (p) => {
-    p.fill('#000000')
+    p.fill(this.color)
     this.x = this.x + this.speed
     if(this.x > p.width){
       this.x  = 0 
-      this.y = this.y + (Math.random() * 200)
+      this.y = this.y + (Date.now() % 2 === 0 ? (Math.random() * 40) : -(Math.random() * 40))
     }
     p.rect(this.x, this.y, 10,4);
   }
