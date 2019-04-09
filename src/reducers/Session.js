@@ -1,7 +1,7 @@
 import * as SessionAction from '../constants/SessionActions';
 
 const defaultObj = {
-  session: null
+  session: "-Lc3L0FCx445toqccZWT"
 }
 
 export default function sessionReducer(state = defaultObj, action) {
