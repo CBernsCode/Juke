@@ -3,6 +3,9 @@ import { Container, Segment, Button, List, Image } from 'semantic-ui-react';
 import Player from "./Player";
 import { SSL_OP_SINGLE_DH_USE } from "constants";
 
+// TODO
+// How to grab valid token from Player object?
+let token = "BQCNNlvNIp9a3yVDeI6tCP9HRWqfXL_zseRqmqgrSyJP8AZsSdcrqai8DGSf1hJg3IDy5yaVcLlc03G1SmMBcb9cOrTY-lfFXIfZpKld5FpALy-nTNJ5uyfokjCUcwucR__EVwllq3KN0vlwKVVB39_h7DkSBLegSDcNecuserdOiPfIeSL6zMKI2r0iMaqK27FyR-TXe0Z-kjjQsX3WZA4D8tK9G8nG81f5VV6gdqFZv9Gc2ulVWju0HLwLURQqhbM";
 
 export default class Playlist extends Component {
   constructor() {
@@ -11,16 +14,13 @@ export default class Playlist extends Component {
     this.state = {
       playlists: null,
       playlist_tracks: null,
+      current_playlist_id: "",
       trackView: false,
       error: null,
     };
   }
 
   handleRetrievePlaylists = () => {
-    // TODO
-    // How to grab token from Player?
-    let token = "BQA1uKFU-EPOmZPJm3VfTENP6ln-0_hMYpj1ft_eJcCPcWxsNe3TdKxq5iZg8_QDvKc2PMXVY-bHMyDkJAbNjrJZp4IjJWQSSK6nb5IauWNDLhiBMoa8TlW5bnDo4lH3yfthrUuo6GO2ycuJjyzPzvbnrIMLBzJiWv_VYaiCmZNrr1KQNCOF23z_segOz1D4RQMeLWJML0TflHG7n64CU9ecn-AdC4pUVgP-nI_UXYVBlOL0BXqBfe9-rNFzI50tCro";
-
     // https://developer.spotify.com/documentation/web-api/reference/playlists/get-a-list-of-current-users-playlists/
     fetch("https://api.spotify.com/v1/me/playlists", {
       method: "GET",
@@ -48,10 +48,6 @@ export default class Playlist extends Component {
   }
 
   openPlaylist = (id) => {
-    // TODO
-    // How to grab token from Player?
-    let token = "BQA1uKFU-EPOmZPJm3VfTENP6ln-0_hMYpj1ft_eJcCPcWxsNe3TdKxq5iZg8_QDvKc2PMXVY-bHMyDkJAbNjrJZp4IjJWQSSK6nb5IauWNDLhiBMoa8TlW5bnDo4lH3yfthrUuo6GO2ycuJjyzPzvbnrIMLBzJiWv_VYaiCmZNrr1KQNCOF23z_segOz1D4RQMeLWJML0TflHG7n64CU9ecn-AdC4pUVgP-nI_UXYVBlOL0BXqBfe9-rNFzI50tCro";
-
     // https://developer.spotify.com/documentation/web-api/reference/playlists/get-playlists-tracks/
     fetch("https://api.spotify.com/v1/playlists/" + id + "/tracks", {
       method: "GET",
@@ -71,6 +67,7 @@ export default class Playlist extends Component {
     .then(data => {
       console.log(data)
       this.setState({ 
+        current_playlist_id: id,
         playlist_tracks: data,
         trackView: true,
        })
@@ -83,14 +80,54 @@ export default class Playlist extends Component {
 
   // TODO
   // Generate new collaborative playlist
-  createPlaylist = () => {
-
+  createPlaylist = (user_id, name) => {
+    return
+    // https://developer.spotify.com/documentation/web-api/reference-beta/#endpoint-change-playlist-details
+    fetch("https://api.spotify.com/v1/users/" + user_id + "/playlists", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        "name": name,
+        "collaborative": true,
+      }),
+    })
+    .then(response => {
+      if (response.ok) { 
+        return response.json()
+      } 
+      else {
+        throw new Error("Something went wrong...")
+      }
+    })
+    .then(data => {
+      this.setState({ 
+        trackView: false,
+       })
+    })
+    .catch(error => {
+      this.setState({ error })
+      console.log(error)
+    });
   }
 
-  // TODO
-  // Make playlist collaborative
-  makeCollaborative = () => {
 
+  // Make playlist collaborative
+  // Note: You can only set collaborative to true on non-public playlists.
+  makeCollaborative = (id) => {
+    // https://developer.spotify.com/documentation/web-api/reference-beta/#endpoint-change-playlist-details
+    fetch("https://api.spotify.com/v1/playlists/" + id, {
+      method: "PUT",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        "collaborative": true,
+      }),
+    })
   }
 
   listPlaylistItem = (playlist) => (
@@ -140,7 +177,18 @@ export default class Playlist extends Component {
             Get Playlists
           </Button>
         )}
-        {this.state.playlists && !this.state.trackView && (
+        {this.state.playlists && !this.state.trackView && [
+          <Button 
+          fluid
+          style={{
+            margin: "auto",
+            width:"50%"
+          }}
+          color="green"
+          inverted >
+          {/* onClick={ () => this.createPlaylist(user_id, name) } > */}
+          New Playlist
+        </Button>,
           <List id="playlist-names" divided inverted ordered>
             {
               this.state.playlists.items
@@ -149,7 +197,7 @@ export default class Playlist extends Component {
                 })
             }
           </List>
-        )}
+        ]}
         {this.state.playlists && this.state.trackView && [
           <Button 
             fluid
@@ -161,6 +209,17 @@ export default class Playlist extends Component {
             inverted
             onClick={ () => this.setState({ trackView: false })} >
             Go Back
+          </Button>,
+          <Button 
+            fluid
+            style={{
+              margin: "auto",
+              width:"50%"
+            }}
+            color="green"
+            inverted
+            onClick={ () => this.makeCollaborative(this.state.current_playlist_id)} >
+            Make Collaborative
           </Button>,
           <List id="track-names" divided inverted ordered>
           {
