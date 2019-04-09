@@ -20,7 +20,7 @@ code {
 }
 
 .App-header {
-  padding: 1em .5em !important;
+  padding: .75em .5em !important;
   display: flex;
   font-size: calc(10px + 2vmin);
   color: white;
@@ -91,7 +91,7 @@ h1, h2, h3, h4 {
 }
 
 .ui.pointing.secondary.menu {
-  font-size: 150%;
+  font-size: 120%;
 }
 
 a.item {

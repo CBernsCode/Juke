@@ -39,6 +39,8 @@ export default class Player extends Component {
   }
 
   componentDidMount() {
+    const { mediaActions } = this.props
+
     // Get token
     let _token = hash.access_token;
 
@@ -49,6 +51,8 @@ export default class Player extends Component {
         loggedIn: true,
       });
 
+      debugger
+      mediaActions.saveToken(_token);
       this.createPlayer(_token);
     }
   }
@@ -58,6 +62,7 @@ export default class Player extends Component {
   }
 
   async createPlayer(_token) {
+    
     // wait for the Spotify SDK to load
     while (!window.Spotify) {
       await sleep(30)
@@ -157,7 +162,7 @@ export default class Player extends Component {
     const { is_playing } = this.state;
 
     return (
-      <Segment id="player" inverted>
+      <Segment id="player" inverted padded={false}>
         {/* Get token */}
         {!this.state.token && (
           <Button 
@@ -178,8 +183,9 @@ export default class Player extends Component {
         {this.state.token && (
           <Grid textAlign='center'>
             <Grid.Row verticalAlign='middle'>
-              <Grid.Column width={4}>
-                <img src={this.state.item.album.images[0].url} />
+              <Grid.Column width={5}>
+                <img height="100" src={this.state.item.album.images[0].url} /><br />
+                {this.state.item.album.name}
               </Grid.Column>
               <Grid.Column width={12}>
                 {this.state.item.artists[0].name} <br />

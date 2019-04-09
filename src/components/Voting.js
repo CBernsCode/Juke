@@ -109,7 +109,11 @@ class Voting extends Component {
     <List.Item key={song.id}>
       <List.Content>
         <List.Header>
-          <Image size="tiny" src={albumCover} />
+          <Button
+            className="preview-btn"
+            icon="play"
+            circular >
+          </Button>
           <div className="song-info">
             {song.name} <br />
             {song.artist}
@@ -126,7 +130,7 @@ class Voting extends Component {
   render() {
     return (
       <Segment inverted padded>
-        <List id="voting-list" divided inverted ordered>
+        <List id="voting-list" divided inverted ordered size="tiny">
           {
             this.state.songs
               .sort(function (a, b) { return a.bid > b.bid ? -1 : a.bid < b.bid ? 1 : 0; })

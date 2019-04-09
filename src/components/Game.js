@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Header, Segment } from 'semantic-ui-react'
 import {Jumper} from './Jumper'
 import { gameStart } from '../games/TabBeat'
+import { SurvivalGame } from './SurvivalGame'
 // import '../css/TabBeat'
 
 
@@ -27,13 +28,8 @@ export default class Game extends Component {
         <Header as='h1' textAlign='center'>
           Game
         </Header>
-        <div id="game">
-          <h1 id="header">Tap Beat Game</h1>
-          <p>Objective: Tap the buttons in the given time period.</p>
-
-          <button onClick="gameStart()">Start</button>
-        </div>
         {/* <Jumper /> */}
+        <SurvivalGame />
       </Segment>
     )
   }
