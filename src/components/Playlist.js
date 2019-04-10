@@ -1,11 +1,6 @@
 import React, { Component } from "react";
 import { Container, Segment, Button, List, Image } from 'semantic-ui-react';
-import Player from "./Player";
-import { SSL_OP_SINGLE_DH_USE } from "constants";
-
-// TODO
-// How to grab valid token from Player object?
-let token = "BQCNNlvNIp9a3yVDeI6tCP9HRWqfXL_zseRqmqgrSyJP8AZsSdcrqai8DGSf1hJg3IDy5yaVcLlc03G1SmMBcb9cOrTY-lfFXIfZpKld5FpALy-nTNJ5uyfokjCUcwucR__EVwllq3KN0vlwKVVB39_h7DkSBLegSDcNecuserdOiPfIeSL6zMKI2r0iMaqK27FyR-TXe0Z-kjjQsX3WZA4D8tK9G8nG81f5VV6gdqFZv9Gc2ulVWju0HLwLURQqhbM";
+import "../css/index.css";
 
 export default class Playlist extends Component {
   constructor() {
@@ -21,6 +16,7 @@ export default class Playlist extends Component {
   }
 
   handleRetrievePlaylists = () => {
+    const { token } = this.props.media
     // https://developer.spotify.com/documentation/web-api/reference/playlists/get-a-list-of-current-users-playlists/
     fetch("https://api.spotify.com/v1/me/playlists", {
       method: "GET",
@@ -48,6 +44,7 @@ export default class Playlist extends Component {
   }
 
   openPlaylist = (id) => {
+    const { token } = this.props.media
     // https://developer.spotify.com/documentation/web-api/reference/playlists/get-playlists-tracks/
     fetch("https://api.spotify.com/v1/playlists/" + id + "/tracks", {
       method: "GET",
@@ -81,6 +78,7 @@ export default class Playlist extends Component {
   // TODO
   // Generate new collaborative playlist
   createPlaylist = (user_id, name) => {
+    const { token } = this.props.media
     return
     // https://developer.spotify.com/documentation/web-api/reference-beta/#endpoint-change-playlist-details
     fetch("https://api.spotify.com/v1/users/" + user_id + "/playlists", {
@@ -117,6 +115,8 @@ export default class Playlist extends Component {
   // Make playlist collaborative
   // Note: You can only set collaborative to true on non-public playlists.
   makeCollaborative = (id) => {
+    const { token } = this.props.media
+    return
     // https://developer.spotify.com/documentation/web-api/reference-beta/#endpoint-change-playlist-details
     fetch("https://api.spotify.com/v1/playlists/" + id, {
       method: "PUT",
@@ -162,20 +162,23 @@ export default class Playlist extends Component {
   // Make tab persistent
   // Automatically grab playlists on Spotify authentication with valid token
   render() {
+    const { token } = this.props.media
+    
     return (
       <Segment id="playlists" inverted>
-        {!this.state.playlists && (
-          <Button 
-            fluid
-            style={{
-              margin: "auto",
-              width:"50%"
-            }}
-            color="green"
-            inverted
-            onClick={ () => this.handleRetrievePlaylists()} >
-            Get Playlists
-          </Button>
+        {/* {!this.state.playlists && ( */}
+        {token && ( this.handleRetrievePlaylists()
+          // <Button 
+          //   fluid
+          //   style={{
+          //     margin: "auto",
+          //     width:"50%"
+          //   }}
+          //   color="green"
+          //   inverted
+          //   onClick={ () => this.handleRetrievePlaylists()} >
+          //   Get Playlists
+          // </Button>
         )}
         {this.state.playlists && !this.state.trackView && [
           <Button 

@@ -51,7 +51,6 @@ export default class Player extends Component {
         loggedIn: true,
       });
 
-      debugger
       mediaActions.saveToken(_token);
       this.createPlayer(_token);
     }
@@ -185,7 +184,6 @@ export default class Player extends Component {
             <Grid.Row verticalAlign='middle'>
               <Grid.Column width={5}>
                 <img height="100" src={this.state.item.album.images[0].url} /><br />
-                {this.state.item.album.name}
               </Grid.Column>
               <Grid.Column width={12}>
                 {this.state.item.artists[0].name} <br />

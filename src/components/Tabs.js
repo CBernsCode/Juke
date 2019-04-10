@@ -17,7 +17,7 @@ const Tabs = ({ sessionActions }) => {
     {
       menuItem: 'Playlist', render: () =>
         <Tab.Pane attached={false}>
-          <Playlist />
+          {/* <Playlist /> */}
         </Tab.Pane>
     },
     {
