@@ -15,6 +15,12 @@ export default class Playlist extends Component {
     };
   }
 
+  componentDidMount(){
+    if(!!this.props.media.token){
+      this.handleRetrievePlaylists()
+    }
+  }
+
   handleRetrievePlaylists = () => {
     const { token } = this.props.media
     // https://developer.spotify.com/documentation/web-api/reference/playlists/get-a-list-of-current-users-playlists/
@@ -25,22 +31,22 @@ export default class Playlist extends Component {
         "Content-Type": "application/json",
       },
     })
-    .then(response => {
-      if (response.ok) { 
-        return response.json()
-      } 
-      else {
-        throw new Error("Something went wrong...")
-      }
-    })
-    .then(data => {
-      console.log(data)
-      this.setState({ playlists: data })
-    })
-    .catch(error => {
-      this.setState({ error })
-      console.log(error)
-    });
+      .then(response => {
+        if (response.ok) {
+          return response.json()
+        }
+        else {
+          throw new Error("Something went wrong...")
+        }
+      })
+      .then(data => {
+        console.log(data)
+        this.setState({ playlists: data })
+      })
+      .catch(error => {
+        this.setState({ error })
+        console.log(error)
+      });
   }
 
   openPlaylist = (id) => {
@@ -53,26 +59,26 @@ export default class Playlist extends Component {
         "Content-Type": "application/json",
       },
     })
-    .then(response => {
-      if (response.ok) { 
-        return response.json()
-      } 
-      else {
-        throw new Error("Something went wrong...")
-      }
-    })
-    .then(data => {
-      console.log(data)
-      this.setState({ 
-        current_playlist_id: id,
-        playlist_tracks: data,
-        trackView: true,
-       })
-    })
-    .catch(error => {
-      this.setState({ error })
-      console.log(error)
-    });
+      .then(response => {
+        if (response.ok) {
+          return response.json()
+        }
+        else {
+          throw new Error("Something went wrong...")
+        }
+      })
+      .then(data => {
+        console.log(data)
+        this.setState({
+          current_playlist_id: id,
+          playlist_tracks: data,
+          trackView: true,
+        })
+      })
+      .catch(error => {
+        this.setState({ error })
+        console.log(error)
+      });
   }
 
   // TODO
@@ -92,23 +98,23 @@ export default class Playlist extends Component {
         "collaborative": true,
       }),
     })
-    .then(response => {
-      if (response.ok) { 
-        return response.json()
-      } 
-      else {
-        throw new Error("Something went wrong...")
-      }
-    })
-    .then(data => {
-      this.setState({ 
-        trackView: false,
-       })
-    })
-    .catch(error => {
-      this.setState({ error })
-      console.log(error)
-    });
+      .then(response => {
+        if (response.ok) {
+          return response.json()
+        }
+        else {
+          throw new Error("Something went wrong...")
+        }
+      })
+      .then(data => {
+        this.setState({
+          trackView: false,
+        })
+      })
+      .catch(error => {
+        this.setState({ error })
+        console.log(error)
+      });
   }
 
 
@@ -131,29 +137,20 @@ export default class Playlist extends Component {
   }
 
   listPlaylistItem = (playlist) => (
-    <List.Item key={playlist.id}>
+    <List.Item key={playlist.id} onClick={() => this.openPlaylist(playlist.id)}>
+      <Image size="mini" avatar src={playlist.images[0].url} />
       <List.Content>
-        <List.Header>
-          <Image size="small" src={playlist.images[0].url} 
-            onClick={ () => this.openPlaylist(playlist.id) }/>
-          <div className="playlist-info">
-            {playlist.name} <br />
-          </div>
-        </List.Header>
+        {playlist.name}
       </List.Content>
     </List.Item>
   )
 
   listTrackItem = (tracks) => (
     <List.Item key={tracks.track.id}>
+      <Image size="mini" avatar src={tracks.track.album.images[0].url} />
       <List.Content>
-        <List.Header>
-          <Image size="tiny" src={tracks.track.album.images[0].url}/>
-          <div className="track-info">
-            {tracks.track.artists[0].name} <br /> 
-            {tracks.track.name} <br />
-          </div>
-        </List.Header>
+        {tracks.track.artists[0].name} <br />
+        {tracks.track.name} <br />
       </List.Content>
     </List.Item>
   )
@@ -162,76 +159,52 @@ export default class Playlist extends Component {
   // Make tab persistent
   // Automatically grab playlists on Spotify authentication with valid token
   render() {
-    const { token } = this.props.media
-    
+
     return (
       <Segment id="playlists" inverted>
-        {/* {!this.state.playlists && ( */}
-        {token && ( this.handleRetrievePlaylists()
-          // <Button 
-          //   fluid
-          //   style={{
-          //     margin: "auto",
-          //     width:"50%"
-          //   }}
-          //   color="green"
-          //   inverted
-          //   onClick={ () => this.handleRetrievePlaylists()} >
-          //   Get Playlists
-          // </Button>
-        )}
         {this.state.playlists && !this.state.trackView && [
-          <Button 
-          fluid
-          style={{
-            margin: "auto",
-            width:"50%"
-          }}
-          color="green"
-          inverted >
-          {/* onClick={ () => this.createPlaylist(user_id, name) } > */}
-          New Playlist
-        </Button>,
           <List id="playlist-names" divided inverted ordered>
             {
               this.state.playlists.items
-                .map((playlist)=> {
+                .map((playlist) => {
                   return this.listPlaylistItem(playlist)
                 })
             }
-          </List>
+          </List>,
+          <Button.Group fluid>
+            <Button
+              fluid
+              color="green"
+              inverted >
+              {/* onClick={ () => this.createPlaylist(user_id, name) } > */}
+              New Playlist
+            </Button>
+          </Button.Group>
         ]}
         {this.state.playlists && this.state.trackView && [
-          <Button 
-            fluid
-            style={{
-              margin: "auto",
-              width:"50%"
-            }}
-            color="green"
-            inverted
-            onClick={ () => this.setState({ trackView: false })} >
-            Go Back
-          </Button>,
-          <Button 
-            fluid
-            style={{
-              margin: "auto",
-              width:"50%"
-            }}
-            color="green"
-            inverted
-            onClick={ () => this.makeCollaborative(this.state.current_playlist_id)} >
-            Make Collaborative
-          </Button>,
           <List id="track-names" divided inverted ordered>
-          {
-            this.state.playlist_tracks.items
-              .map((tracks)=> {
-                return this.listTrackItem(tracks)
-              })
-          }
-          </List>
+            {
+              this.state.playlist_tracks.items
+                .map((tracks) => {
+                  return this.listTrackItem(tracks)
+                })
+            }
+          </List>,
+          <Button.Group fluid widths="8">
+            <Button
+              color="green"
+              inverted
+              onClick={() => this.setState({ trackView: false })} >
+              Go Back
+            </Button>
+            <Button
+              color="green"
+              inverted
+              onClick={() => this.makeCollaborative(this.state.current_playlist_id)} >
+              Make Collaborative
+          </Button> 
+        </Button.Group>
+
         ]}
       </Segment>
     );

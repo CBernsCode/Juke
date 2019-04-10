@@ -7,8 +7,10 @@ import React, { Component } from "react";
 import { authEndpoint, clientId, redirectUri, scopes } from "../constants/Config";
 import { Button, Grid, Icon, Segment } from 'semantic-ui-react'
 import hash from "../actions/Hash";
-// import "../css/player.css";
+import "../css/player.css";
 import "../css/index.css";
+import Playlist from './Playlist';
+import Tabs from './Tabs';
 
 
 function sleep(ms) {
@@ -180,15 +182,14 @@ export default class Player extends Component {
         )}
         {/* Display player once token acquired */}
         {this.state.token && (
-          <Grid textAlign='center'>
+          <Grid >
             <Grid.Row verticalAlign='middle'>
-              <Grid.Column width={5}>
+              <Grid.Column width={4}>
                 <img height="100" src={this.state.item.album.images[0].url} /><br />
+                {/* {this.state.item.album.name} */}
               </Grid.Column>
               <Grid.Column width={12}>
-                {this.state.item.artists[0].name} <br />
-                {this.state.item.name} <br />
-                {this.state.item.album.name} <br />
+                {`${this.state.item.name} - ${this.state.item.artists[0].name}`}<br />
                 <Button.Group id="player-controls" icon>
                   <Button
                     inverted
@@ -218,6 +219,9 @@ export default class Player extends Component {
                     <Icon name='fast forward' />
                   </Button>
                 </Button.Group>
+              </Grid.Column>
+              <Grid.Column width={16} textAlign='left'>
+                <Tabs {...this.props} />
               </Grid.Column>
             </Grid.Row>
           </Grid>

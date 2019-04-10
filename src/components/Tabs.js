@@ -31,7 +31,7 @@ export class Tabs extends Component {
       },
     ]
     return (
-      <Tab menu={{ secondary: true, pointing: true }} panes={panes} inverted />
+      <Tab menu={{ secondary: true, pointing: true }} panes={panes} padding={false} />
     )
   }
 }
