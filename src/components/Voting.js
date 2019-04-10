@@ -162,17 +162,15 @@ class Voting extends Component {
               })
           }
         </List>
-        <Button 
-          fluid
-          style={{
-            margin: "auto",
-            width:"50%"
-          }}
-          color="green"
-          inverted
-          onClick={ () => this.handleSubmit()} >
-          Bid
-        </Button>
+        <Button.Group fluid>
+          <Button 
+            color="green"
+            inverted
+            onClick={ () => this.handleSubmit()} >
+            Bid
+          </Button>
+
+        </Button.Group>
       </Segment>
     )
   }

@@ -20,8 +20,6 @@ export default class Layout extends Component {
           <Grid.Row>
             <Grid.Column width={6}>
               <Player {...this.props}/>
-              <Playlist {...this.props}/>
-              <Tabs {...this.props} />
             </Grid.Column>
             <Grid.Column width={10}>
               <Game {...this.props}/>

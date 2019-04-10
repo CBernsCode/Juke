@@ -100,7 +100,7 @@ a.item {
 
 a.item.active {
   color: #fff !important;
-  border-color: #33f;
+  border-color: #fff !important;
 }
 
 #game {
@@ -117,4 +117,22 @@ font-family:Arial;
 font-size:15px;
 font-weight:bold;
 padding:8px 29px;
+}
+
+#track-names {
+  height: 50vh;
+  overflow: auto;
+}
+
+#playlist-names{
+  height: 50vh;
+  overflow: auto;
+}
+
+.ui.secondary.pointing.menu .item {
+  padding: .5em 2em;
+}
+
+.ui.menu {
+  min-height: 1.75em;
 }
