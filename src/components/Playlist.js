@@ -34,7 +34,6 @@ export default class Playlist extends Component {
       }
     })
     .then(data => {
-      console.log(data)
       this.setState({ playlists: data })
     })
     .catch(error => {
@@ -62,7 +61,6 @@ export default class Playlist extends Component {
       }
     })
     .then(data => {
-      console.log(data)
       this.setState({ 
         current_playlist_id: id,
         playlist_tracks: data,
