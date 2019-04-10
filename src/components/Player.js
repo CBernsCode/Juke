@@ -7,9 +7,8 @@ import React, { Component } from "react";
 import { authEndpoint, clientId, redirectUri, scopes } from "../constants/Config";
 import { Button, Grid, Icon, Segment } from 'semantic-ui-react'
 import hash from "../actions/Hash";
-// import logo from "./logo.svg";
-// import "./App.css";
-import "../css/player.css";
+// import "../css/player.css";
+import "../css/index.css";
 
 
 function sleep(ms) {
@@ -52,10 +51,13 @@ export default class Player extends Component {
         loggedIn: true,
       });
 
-      debugger
       mediaActions.saveToken(_token);
       this.createPlayer(_token);
     }
+  }
+
+  getToken = () => {
+    return this.state.token;
   }
 
   async createPlayer(_token) {
@@ -115,7 +117,7 @@ export default class Player extends Component {
         "device_ids": [deviceId],
         // true: start playing music if it was paused on the other device
         // false: paused if paused on other device, start playing music otherwise
-        "play": true,
+        "play": false,
       }),
     });
   }
@@ -162,14 +164,19 @@ export default class Player extends Component {
       <Segment id="player" inverted padded={false}>
         {/* Get token */}
         {!this.state.token && (
-          <a
-            className="btn btn--loginApp-link"
+          <Button 
+            fluid
+            style={{
+              margin: "auto",
+              width:"50%"
+            }}
+            color="green"
+            inverted
             href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
               "%20"
-            )}&response_type=token&show_dialog=true`}
-          >
+            )}&response_type=token&show_dialog=true`}>
             Login to Spotify
-            </a>
+          </Button>
         )}
         {/* Display player once token acquired */}
         {this.state.token && (
@@ -177,13 +184,11 @@ export default class Player extends Component {
             <Grid.Row verticalAlign='middle'>
               <Grid.Column width={5}>
                 <img height="100" src={this.state.item.album.images[0].url} /><br />
-                {this.state.item.album.name}
               </Grid.Column>
-              <Grid.Column width={11}>
-                <div id="player-song-info">
-                  {this.state.item.name} <br />
-                  {this.state.item.artists[0].name}
-                </div>
+              <Grid.Column width={12}>
+                {this.state.item.artists[0].name} <br />
+                {this.state.item.name} <br />
+                {this.state.item.album.name} <br />
                 <Button.Group id="player-controls" icon>
                   <Button
                     inverted
@@ -219,6 +224,7 @@ export default class Player extends Component {
         )
         }
       </Segment>
+
     );
   }
 }
