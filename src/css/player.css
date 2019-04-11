@@ -2,6 +2,8 @@
     font-size: 120%;
     color: white;
     text-align: center;
+    height: 88vh;
+    border: 1px solid #eee;
 }
 
 #player .button {

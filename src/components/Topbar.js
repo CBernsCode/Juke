@@ -48,11 +48,15 @@ export default class Topbar extends Component {
     return (
       <Grid>
         <Grid.Row as="Header"  className="App-header">
-          <Grid.Column width={14}>
+          <Grid.Column width={13}>
             <h1>Juke<span id="headline"> - Fight For Your Favorites</span></h1>
           </Grid.Column>
-          <Grid.Column width={2}>
-            <this.loginBtn />
+          <Grid.Column width={3}>
+          {
+            !!this.props.acct.displayName
+              ? <h5 id='user-name'>{this.props.acct.displayName}</h5>
+              : null
+          }
           </Grid.Column>
         </Grid.Row>
       </Grid>
