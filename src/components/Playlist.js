@@ -79,8 +79,6 @@ export default class Playlist extends Component {
     });
   }
 
-  // TODO
-  // Generate new collaborative playlist
   createPlaylist = () => {
     const { token, userId } = this.props.media
     // TODO
@@ -119,12 +117,53 @@ export default class Playlist extends Component {
     });
   }
 
+  // check to see if playlist is set to collaborative or not
+  playlistIsCollaborative = (id) => {
+    const { token } = this.props.media
+
+    // https://developer.spotify.com/documentation/web-api/reference/playlists/get-playlist/
+    fetch("https://api.spotify.com/v1/playlists/" + id, {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json()
+      }
+      else {
+        throw new Error("Something went wrong...")
+      }
+    })
+    .then(data => {
+      console.log("is playlist collab: ", data.collaborative)
+      return data.collaborative
+    })
+    .catch(error => {
+      this.setState({ error })
+      console.log(error)
+    });
+  }
 
   // Make playlist collaborative
   // Note: You can only set collaborative to true on non-public playlists.
-  makeCollaborative = (id) => {
+  toggleCollaborative = (id) => {
     const { token } = this.props.media
-    return
+    let isPublic, isCollaborative = new Boolean
+    
+    if (this.playlistIsCollaborative(id)) {
+      isPublic = false
+      isCollaborative = true
+    }
+    else {
+      isPublic = true
+      isCollaborative = false
+    }
+
+    console.log("CHANGING\nisPublic: ", isPublic, "\isCollab: ", isCollaborative)
+    
     // https://developer.spotify.com/documentation/web-api/reference-beta/#endpoint-change-playlist-details
     fetch("https://api.spotify.com/v1/playlists/" + id, {
       method: "PUT",
@@ -133,9 +172,11 @@ export default class Playlist extends Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        "collaborative": true,
+        "public": isPublic,
+        "collaborative": isCollaborative,
       }),
     })
+    
   }
 
   listPlaylistItem = (playlist) => (
@@ -205,8 +246,12 @@ export default class Playlist extends Component {
             <Button
               color="green"
               inverted
-              onClick={() => this.makeCollaborative(this.state.current_playlist_id)} >
-              Make Collaborative
+              onClick={() => this.toggleCollaborative(this.state.current_playlist_id)} >
+              {
+                this.playlistIsCollaborative(this.state.current_playlist_id)
+                ? "Undo Collaborative"  
+                : "Make Collaborative"
+              }
           </Button> 
         </Button.Group>
 
