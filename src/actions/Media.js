@@ -23,6 +23,10 @@ const saveToken = (token) => {
   return { type: MediaActions.SAVE_TOKEN, payload: token}
 }
 
+const saveUserId = (userId) => {
+  return { type: MediaActions.SAVE_USER_ID, payload: userId }
+}
+
 export const clearPlaylist = () => { 
   return { type: MediaActions.CLEAR_PLAYLIST }
 }
@@ -33,5 +37,6 @@ export default {
   loadPlaylist,
   fetchPlaylist,
   saveToken,
+  saveUserId,
   clearPlaylist,
 }

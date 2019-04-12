@@ -53,13 +53,37 @@ export default class Player extends Component {
       });
 
       mediaActions.saveToken(_token);
+      this.getUserId(_token);
       this.createPlayer(_token);
       this.getProfileData(_token);
     }
   }
 
-  getToken = () => {
-    return this.state.token;
+  getUserId = (token) => {
+    const { mediaActions } = this.props
+
+    fetch("https://api.spotify.com/v1/me", {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+    .then(response => {
+      if (response.ok) { 
+        return response.json()
+      } 
+      else {
+        throw new Error("Something went wrong...")
+      }
+    })
+    .then(data => {
+      mediaActions.saveUserId(data.id);
+    })
+    .catch(error => {
+      this.setState({ error })
+      console.log(error)
+    });
   }
 
   async createPlayer(_token) {

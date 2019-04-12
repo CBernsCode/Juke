@@ -3,6 +3,7 @@ import * as MediaActions from '../constants/MediaActions';
 const defaultObj = {
   playlist: [],
   token: null,
+  userId: "",
 }
 
 
@@ -27,6 +28,11 @@ export default function mediaReducer(state = defaultObj, action ){
       return {
         ...state,
         token: action.payload
+      }
+    case MediaActions.SAVE_USER_ID:
+      return {
+        ...state,
+        userId: action.payload
       }
     default:
       return { ...state };
