@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Image, Input, List, Segment, Button } from 'semantic-ui-react';
-import albumCover from '../static/images/albumTemp.png';
+import {Preview} from './Preview'
+import { Input, List, Segment, Button } from 'semantic-ui-react';
 
 import firebase from '../firebase';
 
@@ -115,15 +115,31 @@ class Voting extends Component {
     console.log("Submitted Bid!")
   }
 
+  getTrackInfo = (trackId) => {
+    const { token } = this.props.media
+    fetch("https://api.spotify.com/v1/tracks/" + trackId, {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+    .then(response => response.json())
+    .then(json => {
+      let artist = json.artists[0].name
+      let { name, preview_url } = json
+
+      console.log({ name, preview_url, artist})
+    })
+  }
+
   listItem = (song, index) => (
     <List.Item key={song.id}>
       <List.Content>
         <List.Header>
-          <Button
-            className="preview-btn"
-            icon="play"
-            circular >
-          </Button>
+          <Preview id={index} 
+            preview_url="https://p.scdn.co/mp3-preview/db700147f4ccde68e1134eda5a6761d6c7dacf24?cid=774b29d4f13844c495f206cafdad9c86" 
+            preview_art="https://i.scdn.co/image/9809079115b43425658b228236a1332b25108aa1"/>    
           <div className="song-info">
             {song.name} <br />
             {song.artist}
@@ -151,8 +167,10 @@ class Voting extends Component {
   }
 
   render() {
+    this.getTrackInfo("44gbF5jrs7bljifR1X8ECK")
     return (
       <Segment inverted padded>
+
         <List id="voting-list" divided inverted ordered size="tiny">
           {
             this.state.songs

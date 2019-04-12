@@ -8,8 +8,7 @@ import { authEndpoint, clientId, redirectUri, scopes } from "../constants/Config
 import { Button, Divider, Grid, Icon, Segment } from 'semantic-ui-react'
 import hash from "../actions/Hash";
 import "../css/player.css";
-import "../css/index.css";
-import Playlist from './Playlist';
+import "../css/index.css";  
 import Tabs from './Tabs';
 
 
