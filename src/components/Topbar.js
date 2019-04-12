@@ -1,65 +1,14 @@
-import React, { Component } from 'react'
-import { auth, provider } from '../firebase.js';
-import { Button, Grid } from 'semantic-ui-react'
+import React from 'react'
+import { Header, Image } from 'semantic-ui-react'
+import Brand from '../static/images/juke.svg'
 
-export default class Topbar extends Component {
+export const Topbar = () => (
+  <Header className="App-header" as='h1'>
+    <Image id="img-brand" src={Brand} />
+    <Header.Content>
+      JUKE
+    <Header.Subheader>Fight For Your Favorites</Header.Subheader>
+    </Header.Content>
+  </Header>
+)
 
-  constructor() {
-    super()
-    this.state = {
-      name: ""
-    }
-  }
-
-
-  logout = () => {
-    let { acctActions } = this.props;
-    auth.signOut().then(() => {
-      acctActions.logout()
-      this.setState({ name: "" });
-    });
-  }
-
-  /**
-  * @summary - The login function runs when the user click to login of the application.
-  */
-  login = () => {
-    let { acctActions } = this.props;
-    auth.signInWithPopup(provider).then((result) => {
-      this.setState({ name: result.user.displayName });
-      acctActions.login(result.user)
-      console.log(result.user)
-    });
-  }
-
-  loginBtn = () => {
-    if (this.props.acct.displayName === "") {
-      return (
-        <Button onClick={() => this.login()} >Sign in</Button>
-      )
-    } else {
-      return (
-        <Button onClick={() => this.logout()} >{this.props.acct.displayName}</Button>
-      )
-    }
-  }
-
-  render() {
-    return (
-      <Grid>
-        <Grid.Row as="Header"  className="App-header">
-          <Grid.Column width={13}>
-            <h1>Juke<span id="headline"> - Fight For Your Favorites</span></h1>
-          </Grid.Column>
-          <Grid.Column width={3}>
-          {
-            !!this.props.acct.displayName
-              ? <h5 id='user-name'>{this.props.acct.displayName}</h5>
-              : null
-          }
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
-    )
-  }
-}

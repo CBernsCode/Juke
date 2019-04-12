@@ -24,11 +24,9 @@ code {
   display: flex;
   font-size: calc(10px + 2vmin);
   color: white;
-  border-bottom: 1px solid #2ecc40;
+  border-bottom: 1px solid #2ecc40 !important;
   
 }
-
-
 
 .App-link {
   color: #61dafb;
@@ -101,8 +99,7 @@ a.item.active {
 
 #game {
   margin: auto;
-  width: 840px;
-  height: 88vh;
+  height: 100%;
   text-align: center;
   border: 1px solid #eee; 
 }
@@ -152,4 +149,13 @@ h2.friend-initial {
 #user-name {
   margin-top: 1em;
   float: right;
+}
+
+.header {
+  color: #fff !important;
+}
+
+img#img-brand {
+  width: 50px;
+  height: 50px;
 }
