@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Grid } from 'semantic-ui-react'
+import { Grid, GridRow } from 'semantic-ui-react'
 import {Topbar} from './Topbar';
-import Game from './Game';
 import Player from './Player';
+import RightPanel from './RightPanel';
 
 export default class Layout extends Component {
   render() {
@@ -15,7 +15,7 @@ export default class Layout extends Component {
               <Player {...this.props}/>
             </Grid.Column>
             <Grid.Column width={10}>
-              <Game {...this.props}/>
+              <RightPanel {...this.props} />
             </Grid.Column>
           </Grid.Row>
         </Grid>

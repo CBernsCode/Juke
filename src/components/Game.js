@@ -26,7 +26,7 @@ export default class Game extends Component {
   
   render() {
     return (
-      <Segment id="game" inverted>
+      <Segment inverted>
         <Header as='h1' textAlign='center'>
           Game
         </Header>

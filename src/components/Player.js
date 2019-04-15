@@ -22,6 +22,7 @@ export default class Player extends Component {
     this.state = {
       token: null,
       item: {
+        id: "",
         album: {
           images: [{ url: "" }]
         },
@@ -39,6 +40,36 @@ export default class Player extends Component {
     };
   }
 
+  getBPM = () => {
+    const { mediaActions } = this.props
+
+    if (this.state.item.id !== "") {
+      // https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/
+      fetch("https://api.spotify.com/v1/audio-features/" + this.state.item.id, {
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${this.state.token}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json()
+        }
+        else {
+          throw new Error("Something went wrong...")
+        }
+      })
+      .then(data => {
+          mediaActions.saveTempo(data.tempo)
+      })
+      .catch(error => {
+          this.setState({ error })
+          console.log(error)
+      });
+      }
+  }
+
   componentDidMount() {
     const { mediaActions } = this.props
 
@@ -53,13 +84,37 @@ export default class Player extends Component {
       });
 
       mediaActions.saveToken(_token);
+      this.getUserId(_token);
       this.createPlayer(_token);
       this.getProfileData(_token);
     }
   }
 
-  getToken = () => {
-    return this.state.token;
+  getUserId = (token) => {
+    const { mediaActions } = this.props
+
+    fetch("https://api.spotify.com/v1/me", {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+    .then(response => {
+      if (response.ok) { 
+        return response.json()
+      } 
+      else {
+        throw new Error("Something went wrong...")
+      }
+    })
+    .then(data => {
+      mediaActions.saveUserId(data.id);
+    })
+    .catch(error => {
+      this.setState({ error })
+      console.log(error)
+    });
   }
 
   async createPlayer(_token) {
@@ -92,13 +147,6 @@ export default class Player extends Component {
     })
       .then(doc => doc.json())
       .then(profile => {
-        // add some test friends
-        // friendActions.addFriend(profile.id, testFriend)
-        // friendActions.addFriend(profile.id, testFriend)
-        // friendActions.addFriend(profile.id, testFriend)
-        // friendActions.addFriend(profile.id, testFriend)
-        // friendActions.addFriend(profile.id, testFriend)
-        // friendActions.addFriend(profile.id, testFriend)
         friendActions.loadFriends(profile.id)
         acctActions.login({
           displayName: profile.display_name,
@@ -161,6 +209,9 @@ export default class Player extends Component {
         duration,
       } = state.track_window;
       const is_playing = !state.paused;
+
+      // Get tempo
+      this.getBPM();
 
       this.setState({
         position,
