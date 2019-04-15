@@ -5,11 +5,10 @@
 
 import React, { Component } from "react";
 import { authEndpoint, clientId, redirectUri, scopes } from "../constants/Config";
-import { Button, Grid, Icon, Segment } from 'semantic-ui-react'
+import { Button, Divider, Grid, Icon, Segment } from 'semantic-ui-react'
 import hash from "../actions/Hash";
 import "../css/player.css";
-import "../css/index.css";
-import Playlist from './Playlist';
+import "../css/index.css";  
 import Tabs from './Tabs';
 
 
@@ -56,6 +55,7 @@ export default class Player extends Component {
       mediaActions.saveToken(_token);
       this.getUserId(_token);
       this.createPlayer(_token);
+      this.getProfileData(_token);
     }
   }
 
@@ -103,6 +103,33 @@ export default class Player extends Component {
 
     // finally, connect
     this.player.connect();
+  }
+
+  getProfileData = (token) => {
+    const { friendActions, acctActions } = this.props
+    fetch("https://api.spotify.com/v1/me", {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then(doc => doc.json())
+      .then(profile => {
+        // add some test friends
+        // friendActions.addFriend(profile.id, testFriend)
+        // friendActions.addFriend(profile.id, testFriend)
+        // friendActions.addFriend(profile.id, testFriend)
+        // friendActions.addFriend(profile.id, testFriend)
+        // friendActions.addFriend(profile.id, testFriend)
+        // friendActions.addFriend(profile.id, testFriend)
+        friendActions.loadFriends(profile.id)
+        acctActions.login({
+          displayName: profile.display_name,
+          uid: profile.id,
+        })
+        console.log(profile)
+      })
   }
 
   createEventHandlers = () => {
@@ -191,12 +218,11 @@ export default class Player extends Component {
         {/* Get token */}
         {!this.state.token && (
           <Button 
-            fluid
             style={{
-              margin: "auto",
-              width:"50%"
+              marginTop: "60%",
             }}
             color="green"
+            size="huge"
             inverted
             href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
               "%20"
@@ -244,6 +270,9 @@ export default class Player extends Component {
                   </Button>
                 </Button.Group>
               </Grid.Column>
+              </Grid.Row>
+            <Divider style={{margin: "0", borderColor: "#fff", borderTop: 0}} />
+            <Grid.Row >
               <Grid.Column width={16} textAlign='left'>
                 <Tabs {...this.props} />
               </Grid.Column>

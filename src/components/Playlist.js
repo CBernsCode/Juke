@@ -121,6 +121,8 @@ export default class Playlist extends Component {
   playlistIsCollaborative = (id) => {
     const { token } = this.props.media
 
+    
+
     // https://developer.spotify.com/documentation/web-api/reference/playlists/get-playlist/
     fetch("https://api.spotify.com/v1/playlists/" + id, {
       method: "GET",

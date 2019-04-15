@@ -6,7 +6,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #3C415E;
+  background: #111;
 }
 
 code {
@@ -20,15 +20,13 @@ code {
 }
 
 .App-header {
-  padding: .75em .5em !important;
+  padding: .5em !important;
   display: flex;
   font-size: calc(10px + 2vmin);
   color: white;
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #2ecc40 !important;
   
 }
-
-
 
 .App-link {
   color: #61dafb;
@@ -72,10 +70,6 @@ h1, h2, h3, h4 {
   padding: 1rem;
 }
 
-#game {
-  height: 86vh;
-}
-
 .ui.tab {
   display: none;
   background: transparent;
@@ -100,32 +94,31 @@ a.item {
 
 a.item.active {
   color: #fff !important;
-  border-color: #fff !important;
+  border-color: #2ecc40 !important;
 }
 
 #game {
   margin: auto;
-  width: 840px;
-  height: 656px;
-  background-color: black;
+  height: 100%;
   text-align: center;
+  border: 1px solid #eee; 
 }
 
 button {
   margin-top: 100px;
-font-family:Arial;
-font-size:15px;
-font-weight:bold;
-padding:8px 29px;
+  font-family:Arial;
+  font-size:15px;
+  font-weight:bold;
+  padding:8px 29px;
 }
 
 #track-names {
-  height: 50vh;
+  height: 48vh;
   overflow: auto;
 }
 
 #playlist-names{
-  height: 50vh;
+  height: 48vh;
   overflow: auto;
 }
 
@@ -135,4 +128,43 @@ padding:8px 29px;
 
 .ui.menu {
   min-height: 1.75em;
+}
+
+h2.friend-initial {
+  color: #fff !important;
+  padding: .25em .5em;
+  margin: 0 1em;
+  float: left;
+  border: 1px solid;
+  margin-right: .5em !important;
+  width: 2em;
+  text-align: center;
+
+}
+
+#voting-list {
+  height: 46vh;
+}
+
+#user-name {
+  margin-top: 1em;
+  float: right;
+}
+
+.header {
+  color: #fff !important;
+}
+
+img#img-brand {
+  width: 50px;
+  height: 50px;
+}
+
+video {
+  display: none;
+}
+
+.voting-song-preview {
+  background-size: cover !important;
+  padding: 1.5em !important;
 }

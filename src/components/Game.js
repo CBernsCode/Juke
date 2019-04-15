@@ -20,8 +20,10 @@ export default class Game extends Component {
   }
 
   componentDidMount() {
-    // gameStart()
+
   }
+
+  
   render() {
     return (
       <Segment id="game" inverted>

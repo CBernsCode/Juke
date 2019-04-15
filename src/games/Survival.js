@@ -10,7 +10,10 @@ let canvas;
 export default function sketch(p) {
   window.p = p
   let rotation = 0;
-  let b = new Bullet(0,50,6)
+  let arr = []
+  for(let i = 0 ; i < 700; i += 50 ){
+    arr.push(new Bullet(i,100,6), new Bullet(i,200,6))
+  }
 
   p.setup = function () {
     p.createCanvas(600, 400,);
@@ -26,7 +29,7 @@ export default function sketch(p) {
   p.draw = function () {
     p.background(100);
     p.noStroke();
-    b.draw(p)
+    arr.forEach(it => it.draw(p))
   };
 };
 
@@ -34,7 +37,7 @@ class Bullet {
 
   constructor(x,y,speed = 2, color = "#000000"){
     this.x = x
-    this.y = y + (Math.random() * 200)
+    this.y = y //+ (Math.random() * 200)
     this.speed = speed
     this.color = color
   }
@@ -44,7 +47,7 @@ class Bullet {
     this.x = this.x + this.speed
     if(this.x > p.width){
       this.x  = 0 
-      this.y = this.y + (Date.now() % 2 === 0 ? (Math.random() * 40) : -(Math.random() * 40))
+      // this.y = this.y + (Date.now() % 2 === 0 ? (Math.random() * 40) : -(Math.random() * 40))
     }
     p.rect(this.x, this.y, 10,4);
   }
