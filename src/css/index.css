@@ -169,3 +169,22 @@ video {
   padding: 1.5em !important;
   display: inline-block;
 }
+
+div#right-panel {
+  height: 88vh;
+  border: 1px solid #eee;
+  text-align: center;
+}
+
+div#search-results {
+  overflow: auto;
+  display: flex;
+}
+
+#search-results .header {
+  font-size: 65%;
+}
+
+.ui.icon.input {
+  width: 100%;
+}
