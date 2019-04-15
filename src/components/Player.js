@@ -22,6 +22,7 @@ export default class Player extends Component {
     this.state = {
       token: null,
       item: {
+        id: "",
         album: {
           images: [{ url: "" }]
         },
@@ -37,6 +38,36 @@ export default class Player extends Component {
       position: 0,
       duration: 1,
     };
+  }
+
+  getBPM = () => {
+    const { mediaActions } = this.props
+
+    if (this.state.item.id !== "") {
+      // https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/
+      fetch("https://api.spotify.com/v1/audio-features/" + this.state.item.id, {
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${this.state.token}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json()
+        }
+        else {
+          throw new Error("Something went wrong...")
+        }
+      })
+      .then(data => {
+          mediaActions.saveTempo(data.tempo)
+      })
+      .catch(error => {
+          this.setState({ error })
+          console.log(error)
+      });
+      }
   }
 
   componentDidMount() {
@@ -185,6 +216,9 @@ export default class Player extends Component {
         duration,
       } = state.track_window;
       const is_playing = !state.paused;
+
+      // Get tempo
+      this.getBPM();
 
       this.setState({
         position,
