@@ -147,13 +147,6 @@ export default class Player extends Component {
     })
       .then(doc => doc.json())
       .then(profile => {
-        // add some test friends
-        // friendActions.addFriend(profile.id, testFriend)
-        // friendActions.addFriend(profile.id, testFriend)
-        // friendActions.addFriend(profile.id, testFriend)
-        // friendActions.addFriend(profile.id, testFriend)
-        // friendActions.addFriend(profile.id, testFriend)
-        // friendActions.addFriend(profile.id, testFriend)
         friendActions.loadFriends(profile.id)
         acctActions.login({
           displayName: profile.display_name,

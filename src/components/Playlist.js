@@ -15,8 +15,8 @@ export default class Playlist extends Component {
     };
   }
 
-  componentDidMount(){
-    if(!!this.props.media.token){
+  componentDidMount() {
+    if (!!this.props.media.token) {
       this.handleRetrievePlaylists()
     }
   }
@@ -32,9 +32,9 @@ export default class Playlist extends Component {
       },
     })
     .then(response => {
-      if (response.ok) { 
+      if (response.ok) {
         return response.json()
-      } 
+      }
       else {
         throw new Error("Something went wrong...")
       }
@@ -51,7 +51,7 @@ export default class Playlist extends Component {
   openPlaylist = (id) => {
     const { token } = this.props.media
     // https://developer.spotify.com/documentation/web-api/reference/playlists/get-playlists-tracks/
-    fetch("https://api.spotify.com/v1/playlists/" + id + "/tracks", {
+    fetch("https://api.spotify.com/v1/playlists/" + id, {
       method: "GET",
       headers: {
         authorization: `Bearer ${token}`,
@@ -59,19 +59,20 @@ export default class Playlist extends Component {
       },
     })
     .then(response => {
-      if (response.ok) { 
+      if (response.ok) {
         return response.json()
-      } 
+      }
       else {
         throw new Error("Something went wrong...")
       }
     })
     .then(data => {
-      this.setState({ 
+      this.setState({
         current_playlist_id: id,
-        playlist_tracks: data,
+        playlist: data,
+        playlist_tracks: data.tracks,
         trackView: true,
-       })
+      })
     })
     .catch(error => {
       this.setState({ error })
@@ -120,9 +121,6 @@ export default class Playlist extends Component {
   // check to see if playlist is set to collaborative or not
   playlistIsCollaborative = (id) => {
     const { token } = this.props.media
-
-    
-
     // https://developer.spotify.com/documentation/web-api/reference/playlists/get-playlist/
     fetch("https://api.spotify.com/v1/playlists/" + id, {
       method: "GET",
@@ -153,9 +151,9 @@ export default class Playlist extends Component {
   // Note: You can only set collaborative to true on non-public playlists.
   toggleCollaborative = (id) => {
     const { token } = this.props.media
-    let isPublic, isCollaborative = new Boolean
-    
-    if (this.playlistIsCollaborative(id)) {
+    let isPublic, isCollaborative
+
+    if (!!this.state.playlist.collaborative) {
       isPublic = false
       isCollaborative = true
     }
@@ -177,19 +175,26 @@ export default class Playlist extends Component {
         "public": isPublic,
         "collaborative": isCollaborative,
       }),
+    }).then(() => {
+      this.setState({
+        playlist: {
+          ...this.state.playlist,
+          collaborative: !this.state.playlist.collaborative
+        },
+      })
     })
     
   }
 
   listPlaylistItem = (playlist) => (
     <List.Item key={playlist.id} onClick={() => this.openPlaylist(playlist.id)}>
-    { playlist.images[0] ? 
-      <Image size="mini" avatar src={playlist.images[0].url} />
-      :
-      // TODO
-      // Change to question mark or something
-      <Icon name='play' />
-    }
+      {playlist.images[0] ?
+        <Image size="mini" avatar src={playlist.images[0].url} />
+        :
+        // TODO
+        // Change to question mark or something
+        <Icon name='play' />
+      }
       <List.Content>
         {playlist.name}
       </List.Content>
@@ -223,8 +228,8 @@ export default class Playlist extends Component {
             <Button
               fluid
               color="green"
-              inverted 
-              onClick={ () => this.createPlaylist() } >
+              inverted
+              onClick={() => this.createPlaylist()} >
               New Playlist
             </Button>
           </Button.Group>
@@ -242,7 +247,7 @@ export default class Playlist extends Component {
             <Button
               color="green"
               inverted
-              onClick={() => this.setState({ trackView: false })} >
+              onClick={() => this.setState({ trackView: false, playlist: null })} >
               Go Back
             </Button>
             <Button
@@ -251,8 +256,8 @@ export default class Playlist extends Component {
               onClick={() => this.toggleCollaborative(this.state.current_playlist_id)} >
               {
                 this.playlistIsCollaborative(this.state.current_playlist_id)
-                ? "Undo Collaborative"  
-                : "Make Collaborative"
+                  ? "Undo Collaborative"  
+                  : "Make Collaborative"
               }
           </Button> 
         </Button.Group>

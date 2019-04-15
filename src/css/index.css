@@ -167,4 +167,5 @@ video {
 .voting-song-preview {
   background-size: cover !important;
   padding: 1.5em !important;
+  display: inline-block;
 }
