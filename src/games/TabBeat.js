@@ -23,7 +23,7 @@ export const gameStart = () => {
   game.appendChild(scoreCount);
 
   // The game is set to last 1 minute
-  while (timeElapsed != totalGameTime) {
+  while (timeElapsed !== totalGameTime) {
 
     // Makes it so that every 1.5 seconds, a button will appear
     timeElapsed += 1500;
@@ -31,27 +31,27 @@ export const gameStart = () => {
   }
 
   function createButton(seconds) {
-    // setTimeout(function () {
-    //   let buttonTest = document.createElement("button");
-    //   buttonTest.style.top = Math.floor((Math.random() * 200) + 100) + "px";
-    //   buttonTest.style.left = Math.floor((Math.random() * 200) + 300) + "px";
-    //   buttonTest.style.position = "absolute";
+    setTimeout(function () {
+      let buttonTest = document.createElement("button");
+      buttonTest.style.top = Math.floor((Math.random() * 200) + 100) + "px";
+      buttonTest.style.left = Math.floor((Math.random() * 200) + 300) + "px";
+      buttonTest.style.position = "absolute";
   
-    //   if (buttonNum == 9) {
-    //     buttonNum = 0;
-    //     buttonTest.innerHTML = ++buttonNum;
-    //   } else {
-    //     buttonTest.innerHTML = ++buttonNum;
-    //   }
+      if (buttonNum === 9) {
+        buttonNum = 0;
+        buttonTest.innerHTML = ++buttonNum;
+      } else {
+        buttonTest.innerHTML = ++buttonNum;
+      }
   
-    //   buttonTest.addEventListener('click', function () {
-    //     this.remove();
-    //     updateScore();
-    //   });
+      buttonTest.addEventListener('click', function () {
+        this.remove();
+        updateScore();
+      });
   
-    //   buttonTest.id = "gameButton";
-    //   game.appendChild(buttonTest);
-    // }, seconds);
+      buttonTest.id = "gameButton";
+      game.appendChild(buttonTest);
+    }, seconds);
   }
   
   function updateScore() {

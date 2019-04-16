@@ -19,9 +19,29 @@ const fetchPlaylist = () => {
   }
 }
 
+const saveToken = (token) => {
+  return { type: MediaActions.SAVE_TOKEN, payload: token}
+}
+
+const saveUserId = (userId) => {
+  return { type: MediaActions.SAVE_USER_ID, payload: userId }
+}
+
+const saveTempo = (tempo) => {
+  return { type: MediaActions.SAVE_TEMPO, payload: tempo }
+}
+
+export const clearPlaylist = () => { 
+  return { type: MediaActions.CLEAR_PLAYLIST }
+}
+
 export default {
   addToPlaylist,
   exportPlaylist,
   loadPlaylist,
-  fetchPlaylist
+  fetchPlaylist,
+  saveToken,
+  saveUserId,
+  saveTempo,
+  clearPlaylist,
 }

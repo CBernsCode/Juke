@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import p5 from 'p5';
 let x;
 let Bx;
@@ -96,3 +97,4 @@ function collideRectRect(x, y, w, h, x2, y2, w2, h2) {
   }
   return false;
 };
+

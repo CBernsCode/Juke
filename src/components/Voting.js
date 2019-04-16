@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Image, Input, List, Segment, Button } from 'semantic-ui-react';
-import albumCover from '../static/images/albumTemp.png';
+import {Preview} from './Preview'
+import { Input, List, Segment, Button } from 'semantic-ui-react';
 
 import firebase from '../firebase';
 
@@ -38,13 +38,16 @@ class Voting extends Component {
     this.state = {
       songs: [],
       bids: [],
+      pointBalance: 1000,
     }
   }
 
   componentDidMount = () => {
+    const sessionId = this.props.sesh.session
+    // debugger
     let key = "";
-    if (this.props.sessionKey) {
-      key = this.props.sessionKey;
+    if (sessionId) {
+      key = sessionId
     } else {
       key = firebase.ref("/session").push({
         // chat: [{msg:"1", msg: "2"}],
@@ -53,12 +56,6 @@ class Voting extends Component {
       }).key
     }
     this.attachToSession(key)
-
-    // firebase.ref("/session/").child(key).child("songs").on('value', (snapshot) => {
-    //   let snap = snapshot.val()  
-    //   console.log(snap)
-    //   this.setState({songs: snap})
-    // })
     this.props.sessionActions.startSession({ session: key })
   }
 
@@ -66,13 +63,9 @@ class Voting extends Component {
     this.detachFromSession()
   }
 
-  attachToSession = (key) => {
-    firebase.ref(`/session/${key}/songs`).on('value', (snapshot) => {
+  attachToSession = (token) => {
+    firebase.ref(`/session/${token}/songs`).on('value', (snapshot) => {
       let snap = snapshot.val()
-      if(this.state.bids.length < snap.length){
-        Array(snap.length).fill(0)
-      }
-      console.log(snap) // Log for debug
       this.setState({ songs: snap })
     })
   }
@@ -88,28 +81,65 @@ class Voting extends Component {
   }
 
   handleMessage = (e, id) => {
-    let bids = this.state.bids
-    bids[id] = e.target.value
-    this.setState({
-      bids
-    })
+    let {bids, pointBalance } = this.state
+    let bid = e.target.value
+    if( !!bid && bid > 0 && (pointBalance - bid > 0)){
+      bids[id] = bid
+      pointBalance -= bid
+      this.setState({
+        bids,
+        pointBalance,
+      })
+    } else {
+      bids[id] = 0
+      this.setState({
+        bids,
+      })
+    }
     console.log(e.target.value + " " + id);
   }
 
   handleSubmit = () => {
+    const { bids } = this.state
 
-    let blank = Array(this.state.songs.length).fill(0)
-    this.setState({
-      bids: blank
+    bids.forEach((bid, index) => {
+      firebase.ref(`/session/${this.props.sesh.session}/songs/${index}/bid/`).push(Number(bid));
+      // newPostRef.set(bid)
     })
+
+    this.setState({
+      bids: Array(this.state.songs.length).fill(0)
+    })
+    this.getTotals()
+
     console.log("Submitted Bid!")
+  }
+
+  getTrackInfo = (trackId) => {
+    const { token } = this.props.media
+    fetch("https://api.spotify.com/v1/tracks/" + trackId, {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+    .then(response => response.json())
+    .then(json => {
+      let artist = json.artists[0].name
+      let { name, preview_url } = json
+
+      console.log({ name, preview_url, artist})
+    })
   }
 
   listItem = (song, index) => (
     <List.Item key={song.id}>
       <List.Content>
         <List.Header>
-          <Image size="tiny" src={albumCover} />
+          <Preview id={index} 
+            preview_url="https://p.scdn.co/mp3-preview/db700147f4ccde68e1134eda5a6761d6c7dacf24?cid=774b29d4f13844c495f206cafdad9c86" 
+            preview_art="https://i.scdn.co/image/9809079115b43425658b228236a1332b25108aa1"/>    
           <div className="song-info">
             {song.name} <br />
             {song.artist}
@@ -123,10 +153,25 @@ class Voting extends Component {
     </List.Item>
   )
 
+  getTotals = () => {
+    firebase.ref(`/session/${this.props.sesh.session}/songs`).once('value').then(snapshot => {
+      let snap = snapshot.val()
+      !!snap && snap.map( song => {
+        let sum = 0;
+        Object.keys(song.bid).forEach(key => {
+          sum += Number(song.bid[key])
+        })
+        console.log(sum)
+      })
+    })
+  }
+
   render() {
+    this.getTrackInfo("44gbF5jrs7bljifR1X8ECK")
     return (
       <Segment inverted padded>
-        <List id="voting-list" divided inverted ordered>
+
+        <List id="voting-list" divided inverted ordered size="tiny">
           {
             this.state.songs
               .sort(function (a, b) { return a.bid > b.bid ? -1 : a.bid < b.bid ? 1 : 0; })
@@ -135,17 +180,15 @@ class Voting extends Component {
               })
           }
         </List>
-        <Button 
-          fluid
-          style={{
-            margin: "auto",
-            width:"50%"
-          }}
-          color="green"
-          inverted
-          onClick={ () => this.handleSubmit()} >
-          Bid
-        </Button>
+        <Button.Group fluid>
+          <Button 
+            color="green"
+            inverted
+            onClick={ () => this.handleSubmit()} >
+            Bid
+          </Button>
+
+        </Button.Group>
       </Segment>
     )
   }

@@ -1,29 +1,21 @@
 import React, { Component } from 'react';
-import { Grid } from 'semantic-ui-react'
-import Topbar from './Topbar';
-import Game from './Game';
-import { Player } from './Player';
-import { Playlist } from './Playlist';
-import Voting from './Voting';
-
-import Tabs from './Tabs'
+import { Grid, GridRow } from 'semantic-ui-react'
+import {Topbar} from './Topbar';
+import Player from './Player';
+import RightPanel from './RightPanel';
 
 export default class Layout extends Component {
   render() {
-    let {acctActions, acct, sessionActions} = this.props
     return (
       <>
-        <Topbar acctActions={acctActions} acct={acct} />
+        <Topbar />
         <Grid className="App" stackable padded="horizontally">
-          {/* <Grid.Row width={16}>
-          </Grid.Row> */}
           <Grid.Row>
             <Grid.Column width={6}>
-              <Player />
-              <Tabs {...this.props} />
+              <Player {...this.props}/>
             </Grid.Column>
             <Grid.Column width={10}>
-              <Game />
+              <RightPanel {...this.props} />
             </Grid.Column>
           </Grid.Row>
         </Grid>
