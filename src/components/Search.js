@@ -131,6 +131,7 @@ export default class SearchBar extends Component {
                 // results={results}
                 // resultRenderer={resultRenderer}
                 value={value}
+                open={false}
                 {...this.props}
               />
             </Grid.Column>
