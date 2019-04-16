@@ -49,6 +49,7 @@ export default class Playlist extends Component {
   }
 
   openPlaylist = (id) => {
+    const { mediaActions } = this.props
     const { token } = this.props.media
     // https://developer.spotify.com/documentation/web-api/reference/playlists/get-playlists-tracks/
     fetch("https://api.spotify.com/v1/playlists/" + id, {
@@ -67,6 +68,7 @@ export default class Playlist extends Component {
       }
     })
     .then(data => {
+      mediaActions.loadPlaylist(data)
       this.setState({
         current_playlist_id: id,
         playlist: data,

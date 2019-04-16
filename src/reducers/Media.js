@@ -1,7 +1,7 @@
 import * as MediaActions from '../constants/MediaActions';
 
 const defaultObj = {
-  playlist: [],
+  playlist: {},
   token: null,
   userId: "",
   tempo: 0,
@@ -18,7 +18,7 @@ export default function mediaReducer(state = defaultObj, action ){
     case MediaActions.LOAD_PLAYLIST:
       return {
         ...state,
-        playlist: [...action.payload]
+        playlist: action.payload
       }
     case MediaActions.CLEAR_PLAYLIST:
       return {

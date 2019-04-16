@@ -138,8 +138,8 @@ class Voting extends Component {
       <List.Content>
         <List.Header>
           <Preview id={index} 
-            preview_url="https://p.scdn.co/mp3-preview/db700147f4ccde68e1134eda5a6761d6c7dacf24?cid=774b29d4f13844c495f206cafdad9c86" 
-            preview_art="https://i.scdn.co/image/9809079115b43425658b228236a1332b25108aa1"/>    
+            preview_url={song.preview_url || ""} 
+            preview_art={song.album_art || ""}/>    
           <div className="song-info">
             {song.name} <br />
             {song.artist}
