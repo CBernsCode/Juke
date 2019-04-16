@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import p5 from 'p5';
 let x;
 let Bx;
