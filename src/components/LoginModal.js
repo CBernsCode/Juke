@@ -5,9 +5,17 @@ import { authEndpoint, clientId, redirectUri, scopes } from "../constants/Config
 export default class LoginModal extends Component {
   state = { modalOpen: true }
 
-  handleOpen = () => this.setState({ modalOpen: true })
+  handleOpen = () => {
+    this.setState({ modalOpen: true })
+  }
 
-  handleClose = () => this.setState({ modalOpen: false })
+  handleClose = () => {
+    const { uid } = this.props.acct
+    if (!uid) 
+      return
+    else 
+      this.setState({ modalOpen: false })
+  }
 
   render() {
     const { uid } = this.props.acct
