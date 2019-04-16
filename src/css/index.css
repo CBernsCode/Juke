@@ -113,12 +113,12 @@ button {
 }
 
 #track-names {
-  height: 48vh;
+  height: 47vh;
   overflow: auto;
 }
 
 #playlist-names{
-  height: 48vh;
+  height: 47vh;
   overflow: auto;
 }
 
@@ -143,7 +143,7 @@ h2.friend-initial {
 }
 
 #voting-list {
-  height: 46vh;
+  height: 45vh;
 }
 
 #user-name {
@@ -171,7 +171,7 @@ video {
 }
 
 div#right-panel {
-  height: 88vh;
+  height: 86vh;
   border: 1px solid #eee;
   text-align: center;
 }
