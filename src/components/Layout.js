@@ -3,6 +3,7 @@ import { Grid, GridRow } from 'semantic-ui-react'
 import {Topbar} from './Topbar';
 import Player from './Player';
 import RightPanel from './RightPanel';
+import LoginModal from './LoginModal';
 
 export default class Layout extends Component {
   render() {
@@ -10,6 +11,7 @@ export default class Layout extends Component {
       <>
         <Topbar />
         <Grid className="App" stackable padded="horizontally">
+        <LoginModal {...this.props} />
           <Grid.Row>
             <Grid.Column width={6}>
               <Player {...this.props}/>
