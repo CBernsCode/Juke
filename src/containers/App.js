@@ -5,7 +5,8 @@ import Layout from '../components/Layout';
 import {
   AcctActions,
   MediaActions,
-  SessionActions
+  SessionActions,
+  FriendActions,
 } from '../actions'
 
 class App extends Component {
@@ -20,12 +21,14 @@ const mapStateToProps = store => ({
   acct: store.acctReducer,
   media: store.mediaReducer,
   sesh: store.sessionReducer,
+  friends: store.friendReducer.friendList,
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   acctActions: bindActionCreators(AcctActions, dispatch),
+  friendActions: bindActionCreators(FriendActions, dispatch),
   mediaActions: bindActionCreators(MediaActions, dispatch),
-  sessionActions: bindActionCreators(SessionActions, dispatch)
+  sessionActions: bindActionCreators(SessionActions, dispatch),
 })
 
 export default connect(

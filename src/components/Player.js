@@ -5,11 +5,11 @@
 
 import React, { Component } from "react";
 import { authEndpoint, clientId, redirectUri, scopes } from "../constants/Config";
-import { Button, Grid, Icon, Segment } from 'semantic-ui-react'
+import { Button, Divider, Grid, Icon, Segment } from 'semantic-ui-react'
 import hash from "../actions/Hash";
-// import logo from "./logo.svg";
-// import "./App.css";
 import "../css/player.css";
+import "../css/index.css";  
+import Tabs from './Tabs';
 
 
 function sleep(ms) {
@@ -22,6 +22,7 @@ export default class Player extends Component {
     this.state = {
       token: null,
       item: {
+        id: "",
         album: {
           images: [{ url: "" }]
         },
@@ -39,6 +40,36 @@ export default class Player extends Component {
     };
   }
 
+  getBPM = () => {
+    const { mediaActions } = this.props
+
+    if (this.state.item.id !== "") {
+      // https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/
+      fetch("https://api.spotify.com/v1/audio-features/" + this.state.item.id, {
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${this.state.token}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json()
+        }
+        else {
+          throw new Error("Something went wrong...")
+        }
+      })
+      .then(data => {
+          mediaActions.saveTempo(data.tempo)
+      })
+      .catch(error => {
+          this.setState({ error })
+          console.log(error)
+      });
+      }
+  }
+
   componentDidMount() {
     const { mediaActions } = this.props
 
@@ -52,10 +83,38 @@ export default class Player extends Component {
         loggedIn: true,
       });
 
-      debugger
       mediaActions.saveToken(_token);
+      this.getUserId(_token);
       this.createPlayer(_token);
+      this.getProfileData(_token);
     }
+  }
+
+  getUserId = (token) => {
+    const { mediaActions } = this.props
+
+    fetch("https://api.spotify.com/v1/me", {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+    .then(response => {
+      if (response.ok) { 
+        return response.json()
+      } 
+      else {
+        throw new Error("Something went wrong...")
+      }
+    })
+    .then(data => {
+      mediaActions.saveUserId(data.id);
+    })
+    .catch(error => {
+      this.setState({ error })
+      console.log(error)
+    });
   }
 
   async createPlayer(_token) {
@@ -75,6 +134,26 @@ export default class Player extends Component {
 
     // finally, connect
     this.player.connect();
+  }
+
+  getProfileData = (token) => {
+    const { friendActions, acctActions } = this.props
+    fetch("https://api.spotify.com/v1/me", {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then(doc => doc.json())
+      .then(profile => {
+        friendActions.loadFriends(profile.id)
+        acctActions.login({
+          displayName: profile.display_name,
+          uid: profile.id,
+        })
+        console.log(profile)
+      })
   }
 
   createEventHandlers = () => {
@@ -115,7 +194,7 @@ export default class Player extends Component {
         "device_ids": [deviceId],
         // true: start playing music if it was paused on the other device
         // false: paused if paused on other device, start playing music otherwise
-        "play": true,
+        "play": false,
       }),
     });
   }
@@ -130,6 +209,9 @@ export default class Player extends Component {
         duration,
       } = state.track_window;
       const is_playing = !state.paused;
+
+      // Get tempo
+      this.getBPM();
 
       this.setState({
         position,
@@ -162,28 +244,29 @@ export default class Player extends Component {
       <Segment id="player" inverted padded={false}>
         {/* Get token */}
         {!this.state.token && (
-          <a
-            className="btn btn--loginApp-link"
+          <Button 
+            style={{
+              marginTop: "60%",
+            }}
+            color="green"
+            size="huge"
+            inverted
             href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
               "%20"
-            )}&response_type=token&show_dialog=true`}
-          >
+            )}&response_type=token&show_dialog=true`}>
             Login to Spotify
-            </a>
+          </Button>
         )}
         {/* Display player once token acquired */}
         {this.state.token && (
-          <Grid textAlign='center'>
+          <Grid >
             <Grid.Row verticalAlign='middle'>
-              <Grid.Column width={5}>
+              <Grid.Column width={4}>
                 <img height="100" src={this.state.item.album.images[0].url} /><br />
-                {this.state.item.album.name}
+                {/* {this.state.item.album.name} */}
               </Grid.Column>
-              <Grid.Column width={11}>
-                <div id="player-song-info">
-                  {this.state.item.name} <br />
-                  {this.state.item.artists[0].name}
-                </div>
+              <Grid.Column width={12}>
+                {`${this.state.item.name} - ${this.state.item.artists[0].name}`}<br />
                 <Button.Group id="player-controls" icon>
                   <Button
                     inverted
@@ -214,11 +297,18 @@ export default class Player extends Component {
                   </Button>
                 </Button.Group>
               </Grid.Column>
+              </Grid.Row>
+            <Divider style={{margin: "0", borderColor: "#fff", borderTop: 0}} />
+            <Grid.Row >
+              <Grid.Column width={16} textAlign='left'>
+                <Tabs {...this.props} />
+              </Grid.Column>
             </Grid.Row>
           </Grid>
         )
         }
       </Segment>
+
     );
   }
 }

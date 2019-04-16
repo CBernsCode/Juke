@@ -20,11 +20,13 @@ export default class Game extends Component {
   }
 
   componentDidMount() {
-    // gameStart()
+
   }
+
+  
   render() {
     return (
-      <Segment id="game" inverted>
+      <Segment inverted>
         <Header as='h1' textAlign='center'>
           Game
         </Header>
