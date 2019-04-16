@@ -188,3 +188,7 @@ div#search-results {
 .ui.icon.input {
   width: 100%;
 }
+
+.modal .content {
+  text-align: center;
+}
