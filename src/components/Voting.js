@@ -56,7 +56,7 @@ class Voting extends Component {
       }).key
     }
     this.attachToSession(key)
-    this.props.sessionActions.startSession({ session: key })
+    this.props.sessionActions.startSession( key )
   }
 
   componentWillUnmount = () => {
