@@ -1,0 +1,20 @@
+#player {
+    font-size: 120%;
+    color: white;
+    text-align: center;
+    height: 88vh;
+    border: 1px solid #eee;
+}
+
+#player-controls button {
+    padding: .75em 2.5em;
+}
+
+#player-controls {
+    margin-top: 10px;
+}
+
+#player-song-info{
+    font-size: 120%;
+    line-height: 120%;
+}

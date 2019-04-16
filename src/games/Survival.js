@@ -6,6 +6,7 @@ let y;
 let bullet;
 let pLocation;
 let canvas;
+
 //file for handling the survival game
 export default function sketch(p) {
 
