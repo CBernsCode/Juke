@@ -20,3 +20,4 @@ provider.setCustomParameters({
 });
 export const auth = firebase.auth();
 export const friendRef =  db.collection('friends')
+export const crntSessionRef = db.collection('current_session')

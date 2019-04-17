@@ -91,7 +91,7 @@ export default class Player extends Component {
   }
 
   getUserId = (token) => {
-    const { mediaActions } = this.props
+    const { mediaActions, sessionActions } = this.props
 
     fetch("https://api.spotify.com/v1/me", {
       method: "GET",
@@ -109,7 +109,8 @@ export default class Player extends Component {
       }
     })
     .then(data => {
-      mediaActions.saveUserId(data.id);
+      mediaActions.saveUserId(data.id)
+      sessionActions.getCurrentSession(data.id)
     })
     .catch(error => {
       this.setState({ error })
