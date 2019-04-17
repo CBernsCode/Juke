@@ -29,12 +29,14 @@ export default class SearchBar extends Component {
   })
 
   handleSearchChange = (e, { value }) => {
-    this.setState({ isLoading: true, value })
+    this.setState({ value })
+    // display search results while typing
     // this.findTrack(value);
   };
 
   findTrack = (value) => {
     const { token } = this.props.media
+    this.setState({ isLoading: true })
     var search = value.split(' ').join('+');
 
     // https://developer.spotify.com/documentation/web-api/reference/search/search/
@@ -68,10 +70,9 @@ export default class SearchBar extends Component {
           };
         }
         this.setState({
+          results: tracks,
           isLoading: false,
-          results: tracks
         })
-        console.log(this.state.results)
       })
       .catch(error => {
         this.setState({ error })
