@@ -29,12 +29,14 @@ export default class SearchBar extends Component {
   })
 
   handleSearchChange = (e, { value }) => {
-    this.setState({ isLoading: true, value })
+    this.setState({ value })
+    // display search results while typing
     // this.findTrack(value);
   };
 
   findTrack = (value) => {
     const { token } = this.props.media
+    this.setState({ isLoading: true })
     var search = value.split(' ').join('+');
 
     // https://developer.spotify.com/documentation/web-api/reference/search/search/
@@ -68,10 +70,9 @@ export default class SearchBar extends Component {
           };
         }
         this.setState({
+          results: tracks,
           isLoading: false,
-          results: tracks
         })
-        console.log(this.state.results)
       })
       .catch(error => {
         this.setState({ error })
@@ -84,9 +85,12 @@ export default class SearchBar extends Component {
       <List.Content>
         <Preview id={index+ 'a'}
           preview_url={tracks.preview_url}
-          preview_art={tracks.image} />
+          preview_art={tracks.image} 
+          selectedTrackId={tracks.key}
+          inThePool={true} 
+          props={this.props} />
         <List.Header>
-          {tracks.title} <br />
+          {`"${tracks.title}"`} <br />
           {tracks.description} <br />
         </List.Header>
       </List.Content>

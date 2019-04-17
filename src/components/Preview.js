@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Button } from 'semantic-ui-react'
+import { Button, Popup, Grid } from 'semantic-ui-react'
 
-export const Preview = ({ id, preview_url, preview_art }) => {
+export const Preview = ({ id, preview_url, preview_art, selectedTrackId, inThePool, props }) => {
   const [playing, setPlaying] = useState(false)
+
   return (
     <div 
       style={{ backgroundImage: `url(${preview_art})` }}
@@ -10,27 +11,45 @@ export const Preview = ({ id, preview_url, preview_art }) => {
       <video id={id} className="preview" name="media">
         <source src={preview_url} type="audio/mpeg" />
       </video>
-      <Button
-        circular
-        color='black'
-        icon={playing ? 'pause' : 'play'}
-        onClick={() => {
-          if (playing) {
-            let players = document.querySelectorAll('.preview')
-            players.forEach(player => {
-              player.pause()
-            })
-            document.getElementById(id).pause()
-          } else {
-            let players = document.querySelectorAll('.preview')
-            players.forEach(player => {
-              player.pause()
-            })
-            document.getElementById(id).play()
+      <Grid>
+        <Grid.Column width={10}>
+          <Button.Group icon>
+            <Popup trigger={
+              <Button
+                circular
+                color='black'
+                icon={playing ? 'pause' : 'play'}
+                onClick={() => {
+                  let players = document.querySelectorAll('.preview')
+                  players.forEach(player => {
+                    player.pause()
+                  })
+
+                  if (playing) {
+                    document.getElementById(id).pause()
+                  } else {
+                    document.getElementById(id).play()
+                  }
+                  setPlaying(!playing)
+                }}>
+              </Button>
+            }
+            content="Preview" />
+            { inThePool && 
+            <Popup trigger={
+              <Button
+                circular
+                color='black'
+                icon={'add'}
+                onClick={() => { props.mediaActions.saveSelectedTrackId(selectedTrackId) }}
+                >
+              </Button>
+            }
+            content="Add" />
           }
-          setPlaying(!playing)
-        }}>
-      </Button>
+          </Button.Group>
+        </Grid.Column>
+      </Grid>
     </div>
   )
 }
