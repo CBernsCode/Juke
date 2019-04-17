@@ -21,7 +21,6 @@ export default class LoginModal extends Component {
     const { uid } = this.props.acct
     return (
       <Modal
-        // trigger={<Button onClick={this.handleOpen}>Show Modal</Button>}
         open={this.state.modalOpen && uid === null}
         onClose={this.handleClose}
         basic

@@ -192,3 +192,7 @@ div#search-results {
 .modal .content {
   text-align: center;
 }
+
+.ui.page.modals.dimmer.transition.visible.active {
+  background: #000;
+}
