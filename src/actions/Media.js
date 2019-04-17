@@ -27,6 +27,10 @@ const saveUserId = (userId) => {
   return { type: MediaActions.SAVE_USER_ID, payload: userId }
 }
 
+const saveSelectedTrackId = (selectedTrackId) => {
+  return { type: MediaActions.SAVE_SELECTED_TRACK_ID, payload: selectedTrackId }
+}
+
 const saveTempo = (tempo) => {
   return { type: MediaActions.SAVE_TEMPO, payload: tempo }
 }
@@ -42,6 +46,7 @@ export default {
   fetchPlaylist,
   saveToken,
   saveUserId,
+  saveSelectedTrackId,
   saveTempo,
   clearPlaylist,
 }

@@ -85,9 +85,12 @@ export default class SearchBar extends Component {
       <List.Content>
         <Preview id={index+ 'a'}
           preview_url={tracks.preview_url}
-          preview_art={tracks.image} />
+          preview_art={tracks.image} 
+          selectedTrackId={tracks.key}
+          inThePool={true} 
+          props={this.props} />
         <List.Header>
-          {tracks.title} <br />
+          {`"${tracks.title}"`} <br />
           {tracks.description} <br />
         </List.Header>
       </List.Content>

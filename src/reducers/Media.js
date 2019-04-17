@@ -4,6 +4,7 @@ const defaultObj = {
   playlist: {},
   token: null,
   userId: "",
+  selectedTrackId: "",
   tempo: 0,
 }
 
@@ -34,6 +35,11 @@ export default function mediaReducer(state = defaultObj, action ){
       return {
         ...state,
         userId: action.payload
+      }
+    case MediaActions.SAVE_SELECTED_TRACK_ID:
+      return {
+        ...state,
+        selectedTrackId: action.payload
       }
       case MediaActions.SAVE_TEMPO:
       return {

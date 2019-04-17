@@ -32,7 +32,7 @@ let sampleData = [
   }
 ]
 
-class Voting extends Component {
+export default class Voting extends Component {
 
   constructor(props) {
     super(props)
@@ -81,7 +81,7 @@ class Voting extends Component {
   addSongToVoting = (trackId) => {
     const { token } = this.props.media
     const { session } = this.props.sesh || "Error"
-    debugger
+
     if(!token || !session) return
     fetch("https://api.spotify.com/v1/tracks/" + trackId, {
       method: "GET",
@@ -184,7 +184,10 @@ class Voting extends Component {
         <List.Header>
           <Preview id={index}
             preview_url={song.preview_url || ""}
-            preview_art={song.album_art || ""} />
+            preview_art={song.album_art || ""} 
+            song_id={song.id}
+            inThePool={false} 
+            props={this.props} />
           <div className="song-info">
             {song.name} <br />
             {song.artist}
@@ -253,5 +256,3 @@ class Voting extends Component {
     )
   }
 }
-
-export default Voting;
