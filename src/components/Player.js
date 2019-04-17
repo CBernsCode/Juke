@@ -243,7 +243,7 @@ export default class Player extends Component {
 
     return (
       <Segment id="player" inverted padded={false}>
-        {/* Get token */}
+        {/* Get token
         {!this.state.token && (
           <Button 
             style={{
@@ -259,7 +259,6 @@ export default class Player extends Component {
           </Button>
         )}
         {/* Display player once token acquired */}
-        {this.state.token && (
           <Grid >
             <Grid.Row verticalAlign='middle'>
               <Grid.Column width={4}>
@@ -306,8 +305,6 @@ export default class Player extends Component {
               </Grid.Column>
             </Grid.Row>
           </Grid>
-        )
-        }
       </Segment>
 
     );

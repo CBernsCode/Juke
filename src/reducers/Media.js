@@ -35,7 +35,7 @@ export default function mediaReducer(state = defaultObj, action ){
         ...state,
         userId: action.payload
       }
-      case MediaActions.SAVE_TEMPO:
+    case MediaActions.SAVE_TEMPO:
       return {
         ...state,
         tempo: action.payload

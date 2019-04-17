@@ -9,25 +9,21 @@ let sampleData = [
   {
     artist: "Rush",
     name: "Working Man",
-    bid: 0,
     id: "aababcb1223120"
   },
   {
     artist: "Rush",
     name: "Tom Sawyer",
-    bid: 0,
     id: "aababcb1223121"
   },
   {
     artist: "Rush",
     name: "Freewill",
-    bid: 0,
     id: "aababcb1223122"
   },
   {
     artist: "Rush",
     name: "Working Man",
-    bid: 0,
     id: "aababcb1223123"
   }
 ]
@@ -45,8 +41,18 @@ class Voting extends Component {
   }
 
   componentDidMount = () => {
+    // this.getTrackInfo("44gbF5jrs7bljifR1X8ECK")
+    // this.getSessionState()
+    // this.addSongToVoting("4gEAYcaZPHpFFelzdt7pBX", 0)
+    // this.addSongToVoting("1r5J8bYOWq1Dal5jMQ06WX", 1)
+    // this.addSongToVoting("0DRAw7SODdYDqaInkjkS2v", 2) 
+    // this.addSongToVoting("44gbF5jrs7bljifR1X8ECK", 3)
+    // this.setWinner("cberns223")
+    // this.getWinner()
+    // this.determineWinningSong()
     const sessionId = this.props.sesh.session
-    // debugger
+    const { sessionActions } = this.props
+
     let key = "";
     if (sessionId) {
       key = sessionId
@@ -58,31 +64,86 @@ class Voting extends Component {
         users: ["uid:123", "uid:124", "uid:125"]
       }).key
     }
-    this.attachToSession(key)
-    this.props.sessionActions.startSession(key)
+
+    firebase.ref(`/session/${key}/state`).on('value', (snapshot) => {
+      const newState = snapshot.val()
+      console.log(newState)
+      sessionActions.changeSessionState(newState)
+      if(newState === gameState.waiting){
+        this.determineWinningSong()
+      }
+    })
+
+    firebase.ref(`/session/${key}/songs`).on('value', (snapshot) => {
+      let snap = snapshot.val()
+      this.setState({ songs: snap })
+    })
+  
+    if(true){
+      setTimeout(() => {
+        firebase.ref(`/session/${key}/state`).set(gameState.waiting)
+      }, 5000) 
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const { session } = this.props.sesh
+    // Typical usage (don't forget to compare props):
+    if (session !== prevProps.sesh.session) {
+      const { sessionActions } = this.props
+      firebase.ref(`/session/${session}/state`).on('value', (snapshot) => {
+        const newState = snapshot.val()
+        console.log(newState)
+        sessionActions.changeSessionState(newState)
+        if(newState === gameState.waiting){
+          this.determineWinningSong()
+        }
+      })
+      
+      firebase.ref(`/session/${session}/songs`).on('value', (snapshot) => {
+        let snap = snapshot.val()
+        this.setState({ songs: snap })
+      })
+    }
+  }
+  
+  attachToSession = (token) => {
+    const { sessionActions } = this.props
+    firebase.ref(`/session/${token}/state`).on('value', (snapshot) => {
+      const newState = snapshot.val()
+      console.log(newState)
+      sessionActions.changeSessionState(newState)
+      if(newState === gameState.waiting){
+        this.determineWinningSong()
+      }
+    })
+
+    firebase.ref(`/session/${token}/songs`).on('value', (snapshot) => {
+      let snap = snapshot.val()
+      this.setState({ songs: snap })
+    })
   }
 
   componentWillUnmount = () => {
     this.detachFromSession()
   }
 
-  attachToSession = (token) => {
-    const { sessionActions } = this.props
-    firebase.ref(`/session/${token}/state`).on('value', (snapshot) => {
-      sessionActions.changeSessionState(snapshot.val())
-    })
-    firebase.ref(`/session/${token}/songs`).on('value', (snapshot) => {
-      let snap = snapshot.val()
-      sessionActions.changeSessionState(snapshot.val())
-      this.setState({ songs: snap })
-    })
+  detachFromSession = () => {
+    if (!!this.props.session && this.props.session.id) {
+      try {
+        firebase.ref(`/session/${this.props.sesh.session}/songs`).on('value', () => { })
+        firebase.ref(`/session/${this.props.sesh.session}/state`).on('value', () => { })
+      } catch (error) {
+        throw Error("Was unable to detach from session ref")
+      }
+    }
   }
 
-  addSongToVoting = (trackId) => {
+  addSongToVoting = (trackId, index) => {
     const { token } = this.props.media
     const { session } = this.props.sesh || "Error"
-    debugger
-    if(!token || !session) return
+    // debugger
+    if (!token || !session) return
     fetch("https://api.spotify.com/v1/tracks/" + trackId, {
       method: "GET",
       headers: {
@@ -95,27 +156,15 @@ class Voting extends Component {
         let artist = json.artists[0].name
         let { name, preview_url } = json
         let preview_art = json.album.images[1].url
-        var newSongRef =  firebase.ref(`/session/${session}/songs/3`)
+        var newSongRef = firebase.ref(`/session/${session}/songs/${index}`)
         newSongRef.set({
-          name, 
-          preview_url, 
-          artist, 
+          name,
+          trackId,
+          preview_url,
+          artist,
           preview_art,
         })
-
-        // console.log({ name, preview_url, artist, preview_art })
       })
-    
-  }
-
-  detachFromSession = () => {
-    if (!!this.props.session && this.props.session.id) {
-      try {
-        firebase.ref(`/session/${this.props.session.id}/songs`).on('value', () => { })
-      } catch (error) {
-        throw Error("Was unable to detach from session ref")
-      }
-    }
   }
 
   handleMessage = (e, id) => {
@@ -139,18 +188,16 @@ class Voting extends Component {
 
   handleSubmit = () => {
     const { bids } = this.state
+    const { session } = this.props.sesh
 
     bids.forEach((bid, index) => {
-      firebase.ref(`/session/${this.props.sesh.session}/songs/${index}/bid/`).push(Number(bid));
-      // newPostRef.set(bid)
+      const ref = firebase.ref(`/session/${session}/songs/${index}/bid/`).push()
+      ref.set(Number(bid))
     })
 
     this.setState({
       bids: Array(this.state.songs.length).fill(0)
     })
-    this.getTotals()
-
-    console.log("Submitted Bid!")
   }
 
   getTrackInfo = (trackId, index) => {
@@ -168,12 +215,12 @@ class Voting extends Component {
         let { name, preview_url } = json
         let preview_art = json.album.images[1].url
         return {
-          name, 
-          preview_url, 
-          artist, 
+          name,
+          trackId,
+          preview_url,
+          artist,
           preview_art,
         }
-
         // console.log({ name, preview_url, artist, preview_art })
       })
   }
@@ -184,7 +231,7 @@ class Voting extends Component {
         <List.Header>
           <Preview id={index}
             preview_url={song.preview_url || ""}
-            preview_art={song.album_art || ""} />
+            preview_art={song.preview_art || ""} />
           <div className="song-info">
             {song.name} <br />
             {song.artist}
@@ -205,10 +252,12 @@ class Voting extends Component {
         let snap = snapshot.val()
         !!snap && snap.map(song => {
           let sum = 0;
-          Object.keys(song.bid).forEach(key => {
-            sum += Number(song.bid[key])
-          })
-          console.log(sum)
+          if (!!song.bid) {
+            Object.keys(song.bid).forEach(key => {
+              sum += Number(song.bid[key] || 0)
+            })
+            console.log(sum)
+          }
         })
       })
   }
@@ -223,18 +272,51 @@ class Voting extends Component {
       })
   }
 
+  getWinner = () => {
+    firebase.ref(`/session/${this.props.sesh.session}/winner`)
+      .once('value')
+      .then(snapshot => {
+        let snap = snapshot.val()
+        console.log(snap)
+      })
+  }
+
+  determineWinningSong = () => {
+    let trackId = ""
+    let highestBid = -1
+    firebase.ref(`/session/${this.props.sesh.session}/songs`)
+      .once('value')
+      .then(snapshot => {
+        let snap = snapshot.val()
+        !!snap && snap.map(song => {
+          let sum = 0;
+          if (!!song.bid) {
+            Object.keys(song.bid).forEach(key => {
+              sum += Number(song.bid[key] || 0)
+            })
+          }
+          if (sum > highestBid) {
+            highestBid = sum
+            trackId = song.trackId
+          }
+        })
+        console.log(trackId)
+      })
+  }
+
+  setWinner = (uid) => {
+    firebase.ref(`/session/${this.props.sesh.session}/winner`).set(uid)
+  }
+
   render() {
-    // this.getTrackInfo("44gbF5jrs7bljifR1X8ECK")
-    // this.getSessionState()
-    // this.addSongToVoting("44gbF5jrs7bljifR1X8ECK") 
     return (
       <Segment inverted padded>
-
         <List id="voting-list" divided inverted ordered size="tiny">
           {
             this.state.songs
-              .sort((a, b) => { 
-                return a.bid > b.bid ? -1 : a.bid < b.bid ? 1 : 0; })
+              .sort((a, b) => {
+                return a.bid > b.bid ? -1 : a.bid < b.bid ? 1 : 0;
+              })
               .map((song, i) => {
                 return this.listItem(song, i)
               })
@@ -244,10 +326,9 @@ class Voting extends Component {
           <Button
             color="green"
             inverted
-            onClick={() => this.handleSubmit()} > 
+            onClick={() => this.handleSubmit()} >
             Bid
           </Button>
-
         </Button.Group>
       </Segment>
     )
