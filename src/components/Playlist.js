@@ -83,6 +83,39 @@ export default class Playlist extends Component {
     });
   }
 
+  addSongToPlaylist = () => {
+    const { token, selectedTrackId } = this.props.media
+    let track_uri = "spotify:track:" + selectedTrackId
+
+    // https://developer.spotify.com/documentation/web-api/reference/playlists/add-tracks-to-playlist/
+    fetch("https://api.spotify.com/v1/playlists/" + this.state.current_playlist_id + "/tracks", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        "uris": [track_uri],
+      }),
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json()
+      }
+      else {
+        debugger
+        throw new Error("Something went wrong...")
+      }
+    })
+    .then(data => {
+      console.log("added track to playlist")
+    })
+    .catch(error => {
+      this.setState({ error })
+      console.log(error)
+    });
+  }
+
   handleInputChange = (e) => {
     this.setState({ new_playlist_name: e.target.value })
   }
