@@ -9,7 +9,7 @@ const defaultObj = {
 }
 
 
-export default function mediaReducer(state = defaultObj, action ){
+export default function mediaReducer(state = defaultObj, action) {
   switch (action.type) {
     case MediaActions.ADD_TO_PLAYLIST:
       return {
@@ -41,7 +41,7 @@ export default function mediaReducer(state = defaultObj, action ){
         ...state,
         selectedTrackId: action.payload
       }
-      case MediaActions.SAVE_TEMPO:
+    case MediaActions.SAVE_TEMPO:
       return {
         ...state,
         tempo: action.payload

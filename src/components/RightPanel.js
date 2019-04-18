@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { Button, Icon, List, Segment } from 'semantic-ui-react'
 import { gameState } from '../reducers/Session';
 
+import firebase from '../firebase';
+
 import Game from './Game';
 import SearchBar from './Search';
 
@@ -13,12 +15,28 @@ export default class RightPanel extends Component {
     }
   }
 
-  componentDidMount = () => {
+  componentDidUpdate(prevProps) {
+    const { session } = this.props.sesh
+    // Typical usage (don't forget to compare props):
+    if (session !== prevProps.sesh.session) {
+      const { sessionActions } = this.props
+      firebase.ref(`/session/${session}/state`).on('value', (snapshot) => {
+        const newState = snapshot.val()
+        if(!!newState) {
+          sessionActions.changeSessionState(newState)
+        }
+      })
+    }
+  }
 
-    // cycle through modes
-    // setInterval(() => this.setState({ state: gameState.waiting }), 20000)
-    // setInterval(() => this.setState({ state: gameState.playing }), 30000)
-    // setInterval(() => this.setState({ state: gameState.winner }), 60000)
+  componentWillUnmount = () => {
+    if (!!this.props.session && this.props.session.id) {
+      try {
+        firebase.ref(`/session/${this.props.sesh.session}/state`).on('value', () => { })
+      } catch (error) {
+        throw Error("Was unable to detach from session ref")
+      }
+    }
   }
 
   winner = () => {
@@ -54,8 +72,8 @@ export default class RightPanel extends Component {
   }
 
   selector = () => {
-    const { state } = this.props.sesh
-    switch (state) {
+    const { status } = this.props.sesh
+    switch (status) {
       case gameState.playing:
         return <Game {...this.props} />
       case gameState.winner:

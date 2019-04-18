@@ -16,11 +16,11 @@ export default class Playlist extends Component {
     };
   }
 
-  // componentDidMount() {
-  //   if (!!this.props.media.token) {
-  //     this.handleRetrievePlaylists()
-  //   }
-  // }
+  componentDidMount() {
+    if (!!this.props.media.token) {
+      this.handleRetrievePlaylists()
+    }
+  }
 
   componentDidUpdate(prevProps) {
     // Typical usage (don't forget to compare props):

@@ -36,7 +36,6 @@ export default class Voting extends Component {
       songs: [],
       bids: [],
       pointBalance: 1000,
-      state: gameState.waiting,
     }
   }
 
@@ -51,7 +50,6 @@ export default class Voting extends Component {
     // this.getWinner()
     // this.determineWinningSong()
     const sessionId = this.props.sesh.session
-    const { sessionActions } = this.props
 
     let key = "";
     if (sessionId) {
@@ -64,67 +62,70 @@ export default class Voting extends Component {
         users: ["uid:123", "uid:124", "uid:125"]
       }).key
     }
-
-    firebase.ref(`/session/${key}/state`).on('value', (snapshot) => {
-      const newState = snapshot.val()
-      console.log(newState)
-      sessionActions.changeSessionState(newState)
-      if(newState === gameState.waiting){
-        this.determineWinningSong()
+    firebase.ref(`/session/${sessionId}/songs`).on('value', (snapshot) => {
+      let snap = snapshot.val()
+      if (!!snap) {
+        this.setState({ songs: snap })
       }
     })
-
-    firebase.ref(`/session/${key}/songs`).on('value', (snapshot) => {
-      let snap = snapshot.val()
-      this.setState({ songs: snap })
-    })
-  
-    if(true){
-      setTimeout(() => {
-        firebase.ref(`/session/${key}/state`).set(gameState.waiting)
-      }, 5000) 
-    }
   }
 
   componentDidUpdate(prevProps) {
-    const { session } = this.props.sesh
-    // Typical usage (don't forget to compare props):
-    if (session !== prevProps.sesh.session) {
-      const { sessionActions } = this.props
-      firebase.ref(`/session/${session}/state`).on('value', (snapshot) => {
-        const newState = snapshot.val()
-        console.log(newState)
-        sessionActions.changeSessionState(newState)
-        if(newState === gameState.waiting){
-          this.determineWinningSong()
-        }
-      })
-      
-      firebase.ref(`/session/${session}/songs`).on('value', (snapshot) => {
+    const { sesh } = this.props
+
+    // Compare 
+    if (sesh.status !== prevProps.sesh.status) {
+      // if the session.status goes waiting -> playing decide winning song
+      if (sesh.status === gameState.playing) {
+        this.determineWinningSong()
+        this.cleanUp()
+      }
+      // if the session.status goes playing -> waiting decide winner and runner up
+      if (sesh.status === gameState.waiting) {
+        this.determineWinner()
+      }
+    }
+    if (sesh.session !== prevProps.sesh.session) {
+      firebase.ref(`/session/${sesh.session}/songs`).on('value', (snapshot) => {
         let snap = snapshot.val()
-        this.setState({ songs: snap })
+        if (!!snap) {
+          this.setState({ songs: snap })
+        }
       })
     }
   }
-  
-  attachToSession = (token) => {
-    const { sessionActions } = this.props
-    firebase.ref(`/session/${token}/state`).on('value', (snapshot) => {
-      const newState = snapshot.val()
-      console.log(newState)
-      sessionActions.changeSessionState(newState)
-      if(newState === gameState.waiting){
-        this.determineWinningSong()
-      }
-    })
 
-    firebase.ref(`/session/${token}/songs`).on('value', (snapshot) => {
-      let snap = snapshot.val()
-      this.setState({ songs: snap })
-    })
+  cleanUp = () => {
+    console.log("Clean Up Called")
   }
 
+  determineWinner = () => {
+    console.log("Determine Winner Called")
+  }
+
+  sessionCreation = () => (
+    <div><Button>No Session Found! </Button></div>
+  )
+
+  // attachToSession = (token) => {
+  //   const { sessionActions } = this.props
+  //   firebase.ref(`/session/${token}/state`).on('value', (snapshot) => {
+  //     const newState = snapshot.val()
+  //     console.log(newState)
+  //     sessionActions.changeSessionState(newState)
+  //     if (newState === gameState.waiting) {
+  //       this.determineWinningSong()
+  //     }
+  //   })
+
+  //   firebase.ref(`/session/${token}/songs`).on('value', (snapshot) => {
+  //     let snap = snapshot.val()
+  //     this.setState({ songs: snap })
+  //   })
+  // }
+
   componentWillUnmount = () => {
+    this._isMounted = false;
     this.detachFromSession()
   }
 
@@ -143,7 +144,7 @@ export default class Voting extends Component {
     const { token } = this.props.media
     const { session } = this.props.sesh || "Error"
 
-    if(!token || !session) return
+    if (!token || !session) return
     fetch("https://api.spotify.com/v1/tracks/" + trackId, {
       method: "GET",
       headers: {
@@ -233,7 +234,7 @@ export default class Voting extends Component {
             preview_url={song.preview_url || ""}
             preview_art={song.preview_art || ""}
             song_id={song.id}
-            inThePool={false} 
+            inThePool={false}
             props={this.props} />
           <div className="song-info">
             {song.name} <br />
@@ -312,27 +313,33 @@ export default class Voting extends Component {
   }
 
   render() {
+    const { sesh } = this.props
     return (
       <Segment inverted padded>
-        <List id="voting-list" divided inverted ordered size="tiny">
-          {
-            this.state.songs
-              .sort((a, b) => {
-                return a.bid > b.bid ? -1 : a.bid < b.bid ? 1 : 0;
-              })
-              .map((song, i) => {
-                return this.listItem(song, i)
-              })
-          }
-        </List>
-        <Button.Group fluid>
-          <Button
-            color="green"
-            inverted
-            onClick={() => this.handleSubmit()} >
-            Bid
-          </Button>
-        </Button.Group>
+        {!sesh.session
+          ? <this.sessionCreation />
+          : <>
+            <List id="voting-list" divided inverted ordered size="tiny">
+              {
+                this.state.songs
+                  .sort((a, b) => {
+                    return a.bid > b.bid ? -1 : a.bid < b.bid ? 1 : 0;
+                  })
+                  .map((song, i) => {
+                    return this.listItem(song, i)
+                  })
+              }
+            </List>
+            <Button.Group fluid>
+              <Button
+                color="green"
+                inverted
+                onClick={() => this.handleSubmit()} >
+                Bid
+              </Button>
+            </Button.Group>
+          </>
+        }
       </Segment>
     )
   }
