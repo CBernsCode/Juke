@@ -34,12 +34,13 @@ export default class Voting extends Component {
     super(props)
     this.state = {
       songs: [],
-      bids: [],
+      bids: Array(4).fill(0),
       pointBalance: 1000,
     }
   }
 
   componentDidMount = () => {
+    // Use these to seed if needed
     // this.getTrackInfo("44gbF5jrs7bljifR1X8ECK")
     // this.getSessionState()
     // this.addSongToVoting("4gEAYcaZPHpFFelzdt7pBX", 0)
@@ -107,23 +108,6 @@ export default class Voting extends Component {
     <div><Button>No Session Found! </Button></div>
   )
 
-  // attachToSession = (token) => {
-  //   const { sessionActions } = this.props
-  //   firebase.ref(`/session/${token}/state`).on('value', (snapshot) => {
-  //     const newState = snapshot.val()
-  //     console.log(newState)
-  //     sessionActions.changeSessionState(newState)
-  //     if (newState === gameState.waiting) {
-  //       this.determineWinningSong()
-  //     }
-  //   })
-
-  //   firebase.ref(`/session/${token}/songs`).on('value', (snapshot) => {
-  //     let snap = snapshot.val()
-  //     this.setState({ songs: snap })
-  //   })
-  // }
-
   componentWillUnmount = () => {
     this._isMounted = false;
     this.detachFromSession()
@@ -169,36 +153,38 @@ export default class Voting extends Component {
   }
 
   handleMessage = (e, id) => {
-    let { bids, pointBalance } = this.state
+    let { bids } = this.state
     let bid = e.target.value
-    if (!!bid && bid > 0 && (pointBalance - bid > 0)) {
-      bids[id] = bid
-      pointBalance -= bid
-      this.setState({
-        bids,
-        pointBalance,
-      })
-    } else {
-      bids[id] = 0
-      this.setState({
-        bids,
-      })
-    }
-    console.log(e.target.value + " " + id);
+    bids[id] = bid
+
+    this.setState({
+      bids,
+    })
   }
 
   handleSubmit = () => {
-    const { bids } = this.state
+    const { bids, pointBalance } = this.state
     const { session } = this.props.sesh
 
-    bids.forEach((bid, index) => {
-      const ref = firebase.ref(`/session/${session}/songs/${index}/bid/`).push()
-      ref.set(Number(bid))
-    })
+    // Check totals
+    let total = 0
+    bids.forEach(it => total += Number(it))
 
-    this.setState({
-      bids: Array(this.state.songs.length).fill(0)
-    })
+
+    if (total < pointBalance) {
+      bids.forEach((bid, index) => {
+        const ref = firebase.ref(`/session/${session}/songs/${index}/bid/`).push()
+        ref.set(Number(bid))
+      })
+      this.setState({
+        pointBalance: pointBalance - total,
+        bids: Array(this.state.songs.length).fill(0)
+      })
+    } else {
+      alert("You are trying to spend points to don't have! Please adjust your bet.")
+    }
+
+
   }
 
   getTrackInfo = (trackId, index) => {
@@ -319,6 +305,7 @@ export default class Voting extends Component {
         {!sesh.session
           ? <this.sessionCreation />
           : <>
+            <h4 id="point-total">You have: {this.state.pointBalance} Points</h4>
             <List id="voting-list" divided inverted ordered size="tiny">
               {
                 this.state.songs
