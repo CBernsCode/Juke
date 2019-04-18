@@ -63,7 +63,7 @@ h1, h2, h3, h4 {
 
 .song-info {
   float: right;
-  margin: 1em;
+  margin-left: 1em;
 }
 
 .row {
@@ -195,4 +195,9 @@ div#search-results {
 
 .ui.page.modals.dimmer.transition.visible.active {
   background: #000;
+}
+
+h4#point-total {
+  margin-top: -2em;
+  text-align: center;
 }

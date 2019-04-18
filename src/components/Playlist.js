@@ -260,10 +260,10 @@ export default class Playlist extends Component {
           </List>,
           <Grid>
             <Grid.Row>
-              <Grid.Column width={10}>
+              <Grid.Column width={8}>
                 <Input fluid onChange={this.handleInputChange} placeholder="New Playlist Name..."/>
               </Grid.Column>
-              <Grid.Column width={6}>
+              <Grid.Column width={8}>
                 <Button.Group fluid>
                   <Button
                     fluid
@@ -296,6 +296,7 @@ export default class Playlist extends Component {
             <Button
               color="green"
               inverted
+              style={{padding: 0}}
               onClick={() => this.toggleCollaborative(this.state.current_playlist_id)} >
               {
                 this.state.playlist.collaborative
