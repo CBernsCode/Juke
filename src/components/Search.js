@@ -31,7 +31,7 @@ export default class SearchBar extends Component {
   handleSearchChange = (e, { value }) => {
     this.setState({ value })
     // display search results while typing
-    // this.findTrack(value);
+    this.findTrack(value);
   };
 
   findTrack = (value) => {
@@ -126,6 +126,7 @@ export default class SearchBar extends Component {
       <Segment id="search-bar" inverted>
         <Grid>
           <Grid.Row>
+          <Grid.Column width={3}></Grid.Column>
             <Grid.Column width={10}>
               <Search
                 fluid={true}
@@ -139,14 +140,14 @@ export default class SearchBar extends Component {
                 // {...this.props}
               />
             </Grid.Column>
-            <Grid.Column width={6}>
+            {/* <Grid.Column width={6}>
               <Button
                 fluid
                 color="green"
                 inverted
                 onClick={() => this.findTrack(this.state.value)} >
                 Search</Button>
-            </Grid.Column>
+            </Grid.Column> */}
           </Grid.Row>
         </Grid>
         {this.renderList()}
