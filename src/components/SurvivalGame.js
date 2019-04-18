@@ -4,7 +4,8 @@ import P5Wrapper from 'react-p5-wrapper';
 
 export class SurvivalGame extends Component {
   componentWillUnmount(){
-    window.kill()
+    let val = window.kill()
+    console.log(val)
   }
 
   render() {

@@ -10,8 +10,14 @@ let play;
 let Score = 0;
 
 export default function sketch(p) {
-  window.p = p
-  window.kill = p.remove
+  // window.p = p
+  window.kill = () => {
+    let oldScore = Score 
+    Score = 0
+    p.remove()
+    console.log(oldScore)
+    return oldScore
+  }
   let rotation = 0;
   let arr = []
   for(let i = 0 ; i < 500; i += 50 ){
