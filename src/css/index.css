@@ -97,6 +97,11 @@ a.item.active {
   border-color: #2ecc40 !important;
 }
 
+.item:hover {
+  transition: background-color 0.3s ease;
+  background-color: #2ecc40;
+}
+
 #game {
   margin: auto;
   height: 100%;
