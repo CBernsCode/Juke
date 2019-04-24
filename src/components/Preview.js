@@ -18,10 +18,15 @@ export const Preview = ({ id, preview_url, preview_art, selectedTrackId, inThePo
           { hasPreview && 
             <Popup trigger={
               <Button
+                id="previewButton"
                 circular
                 color='black'
                 icon={playing ? 'pause' : 'play'}
                 onClick={() => {
+                  // TODO
+                  // reset all preview icons 
+                  
+                  // pause all other previews
                   let players = document.querySelectorAll('.preview')
                   players.forEach(player => {
                     player.pause()
@@ -39,16 +44,16 @@ export const Preview = ({ id, preview_url, preview_art, selectedTrackId, inThePo
             content="Preview" />
           }
           { !hasPreview && 
-          <Popup trigger={
-            <Button
-              circular
-              color='black'
-              icon="close"
-              onClick={() => {return}}>
-            </Button>
+            <Popup trigger={
+              <Button
+                circular
+                color='black'
+                icon="close"
+                onClick={() => {return}}>
+              </Button>
+            }
+            content="No Preview Available" />
           }
-          content="No Preview Available" />
-        }
           { inThePool && 
             <Popup trigger={
               <Button

@@ -118,6 +118,41 @@ export default class Player extends Component {
     });
   }
 
+  getCurrentlyPlaying = () => {
+    const { token } = this.props.media 
+    const { mediaActions } = this.props
+
+    // https://developer.spotify.com/documentation/web-api/reference/player/get-the-users-currently-playing-track/
+    fetch("https://api.spotify.com/v1/me/player/currently-playing", {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json()
+      }
+      else {
+        throw new Error("Something went wrong...")
+      }
+    })
+    .then(data => {
+        console.log("currently playing: ", data.item.name, " from a(n) ", data.context.type)
+        if (data.context.type == "playlist") {
+          mediaActions.loadPlaylist(data.context.uri)
+        }
+        else {
+          mediaActions.loadPlaylist("")
+        }
+    })
+    .catch(error => {
+      this.setState({ error })
+      console.log(error)
+    });
+  }
+
   async createPlayer(_token) {
     
     // wait for the Spotify SDK to load
@@ -212,7 +247,10 @@ export default class Player extends Component {
       const is_playing = !state.paused;
 
       // Get tempo
-      this.getBPM();
+      this.getBPM()
+
+      // Get information on currently playing track
+      this.getCurrentlyPlaying()
 
       this.setState({
         position,
@@ -226,17 +264,9 @@ export default class Player extends Component {
     }
   }
 
-  onPrevClick = () => {
-    this.player.previousTrack();
-  }
-
-  onPlayClick = () => {
-    this.player.togglePlay();
-  }
-
-  onNextClick = () => {
-    this.player.nextTrack();
-  }
+  onPrevClick = () => { this.player.previousTrack() }
+  onPlayClick = () => { this.player.togglePlay() }
+  onNextClick = () => { this.player.nextTrack() }
 
   render() {
     const { is_playing } = this.state;

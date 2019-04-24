@@ -19,7 +19,17 @@ export default class Playlist extends Component {
 
   componentDidMount() {
     if (!!this.props.media.token) {
-      this.handleRetrievePlaylists()
+      if(this.props.media.playlist !== "") {
+        console.log("current playlist: ", this.props.media.playlist.split(":").pop())
+        var str = this.props.media.playlist
+        var playlist_id = str.split(":").pop()
+        this.openPlaylist(playlist_id)
+      }
+      else {
+        console.log("no playlist currently...")
+        this.handleRetrievePlaylists()
+      }
+      // this.displayCurrentPlaylist()
     }
   }
 
@@ -55,6 +65,51 @@ export default class Playlist extends Component {
       this.setState({ error })
       console.log(error)
     });
+  }
+
+  displayCurrentPlaylist = () => {
+    const { token } = this.props.media 
+    const { mediaActions } = this.props
+
+    // https://developer.spotify.com/documentation/web-api/reference/player/get-the-users-currently-playing-track/
+    fetch("https://api.spotify.com/v1/me/player/currently-playing", {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json()
+      }
+      else {
+        throw new Error("Something went wrong...")
+      }
+    })
+    .then(data => {
+      if (data.context.type == "playlist") {
+        mediaActions.loadPlaylist(data.context.uri)
+        this.setState({
+          current_playlist_id: data.context.uri,
+        })
+      }
+      else {
+        mediaActions.loadPlaylist("")
+      }
+    })
+    .catch(error => {
+      this.setState({ error })
+      console.log(error)
+    })
+    .then(() => {
+      if (this.state.current_playlist_id !== "") {
+        this.openPlaylist(this.state.current_playlist_id)
+      }
+      else {
+        this.handleRetrievePlaylists()
+      }
+    })
   }
 
   openPlaylist = (id) => {
