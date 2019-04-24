@@ -3,6 +3,7 @@ import { Button, Popup, Grid } from 'semantic-ui-react'
 
 export const Preview = ({ id, preview_url, preview_art, selectedTrackId, inThePool, props }) => {
   const [playing, setPlaying] = useState(false)
+  const hasPreview = (preview_url !== "")
 
   return (
     <div 
@@ -14,6 +15,7 @@ export const Preview = ({ id, preview_url, preview_art, selectedTrackId, inThePo
       <Grid>
         <Grid.Column width={10}>
           <Button.Group icon>
+          { hasPreview && 
             <Popup trigger={
               <Button
                 circular
@@ -35,13 +37,26 @@ export const Preview = ({ id, preview_url, preview_art, selectedTrackId, inThePo
               </Button>
             }
             content="Preview" />
-            { inThePool && 
+          }
+          { !hasPreview && 
+          <Popup trigger={
+            <Button
+              circular
+              color='black'
+              icon="close"
+              onClick={() => {return}}>
+            </Button>
+          }
+          content="No Preview Available" />
+        }
+          { inThePool && 
             <Popup trigger={
               <Button
                 circular
                 color='black'
                 icon={'add'}
-                onClick={() => { props.mediaActions.saveSelectedTrackId(selectedTrackId) }}
+                onClick={() => { 
+                  props.mediaActions.saveSelectedTrackId(selectedTrackId) }}
                 >
               </Button>
             }
