@@ -247,7 +247,7 @@ export default class Voting extends Component {
             preview_art={song.preview_art || ""}
             song_id={song.id}
             inThePool={false}
-            props={this.props} />
+            selectFunc={this.props.mediaActions.saveSelectedTrackId} />
           <div className="song-info">
             {song.name} <br />
             {song.artist}

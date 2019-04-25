@@ -88,7 +88,7 @@ export default class SearchBar extends Component {
           preview_art={tracks.image} 
           selectedTrackId={tracks.key}
           inThePool={true} 
-          props={this.props} />
+          selectFunc={this.props.mediaActions.saveSelectedTrackId} />
         <List.Header>
           {`"${tracks.title}"`} <br />
           {tracks.description} <br />

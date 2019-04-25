@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { Button, Popup, Grid } from 'semantic-ui-react'
 
-export const Preview = ({ id, preview_url, preview_art, selectedTrackId, inThePool, props }) => {
+export const Preview = ({ id, preview_url, preview_art, selectedTrackId, inThePool, selectFunc }) => {
   const [playing, setPlaying] = useState(false)
-
   return (
-    <div 
+    <div
       style={{ backgroundImage: `url(${preview_art})` }}
       className="voting-song-preview">
       <video id={id} className="preview" name="media">
@@ -34,19 +33,19 @@ export const Preview = ({ id, preview_url, preview_art, selectedTrackId, inThePo
                 }}>
               </Button>
             }
-            content="Preview" />
-            { inThePool && 
-            <Popup trigger={
-              <Button
-                circular
-                color='black'
-                icon={'add'}
-                onClick={() => { props.mediaActions.saveSelectedTrackId(selectedTrackId) }}
+              content="Preview" />
+            {inThePool &&
+              <Popup trigger={
+                <Button
+                  circular
+                  color='black'
+                  icon={'add'}
+                  onClick={() => { selectFunc(selectedTrackId) }}
                 >
-              </Button>
+                </Button>
+              }
+                content="Add" />
             }
-            content="Add" />
-          }
           </Button.Group>
         </Grid.Column>
       </Grid>
