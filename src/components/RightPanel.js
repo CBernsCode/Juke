@@ -27,19 +27,20 @@ export default class RightPanel extends Component {
         }
       })
       firebase.ref(`/session/${this.props.sesh.session}/winner`)
-      .on('value', snapshot => {
-        let snap = snapshot.val()
-        if(snap === this.props.acct.uid){
-          sessionActions.changeSessionState(gameState.winner)
-          console.log("Your are the winner!")
-        } else if (snap === "") {
-          sessionActions.changeSessionState(gameState.playing)
-          console.log("Playing...")
-        } else {
-          sessionActions.changeSessionState(gameState.waiting)
-          console.log("Sorry you didn't win...")
-        }
-      })
+        .on('value', snapshot => {
+          let snap = snapshot.val()
+          if (snap === this.props.acct.uid) {
+            sessionActions.changeSessionState(gameState.winner)
+            this.determineWinningSong()
+            console.log("Your are the winner!")
+          } else if (snap === "") {
+            sessionActions.changeSessionState(gameState.playing)
+            console.log("Playing...")
+          } else {
+            sessionActions.changeSessionState(gameState.waiting)
+            console.log("Sorry you didn't win...")
+          }
+        })
     }
 
   }
@@ -66,6 +67,87 @@ export default class RightPanel extends Component {
           <SearchBar {...this.props} />
         </Segment>
     )
+  }
+
+  determineWinningSong = () => {
+    firebase.ref(`/session/${this.props.sesh.session}/songs`)
+    .once('value')
+    .then(snapshot => {
+        let trackId = ""
+        let highestBid = -1
+        let snap = snapshot.val()
+        !!snap && snap.map(song => {
+          let sum = 0;
+          if (!!song.bid) {
+            Object.keys(song.bid).forEach(key => {
+              sum += Number(song.bid[key] || 0)
+            })
+          }
+          if (sum > highestBid) {
+            highestBid = sum
+            trackId = song.trackId
+          }
+        })
+        // this.addSongToVoting(trackId, 0)
+        console.log("swapped")
+      })
+  }
+
+  setWinner = (uid) => {
+    firebase.ref(`/session/${this.props.sesh.session}/winner`).set(uid)
+  }
+
+  // getTrackInfo = (trackId, index) => {
+  //   const { token } = this.props.media
+  //   fetch("https://api.spotify.com/v1/tracks/" + trackId, {
+  //     method: "GET",
+  //     headers: {
+  //       authorization: `Bearer ${token}`,
+  //       "Content-Type": "application/json",
+  //     },
+  //   })
+  //     .then(response => response.json())
+  //     .then(json => {
+  //       let artist = json.artists[0].name
+  //       let { name, preview_url } = json
+  //       let preview_art = json.album.images[1].url
+  //       return {
+  //         name,
+  //         trackId,
+  //         preview_url,
+  //         artist,
+  //         preview_art,
+  //       }
+  //       // console.log({ name, preview_url, artist, preview_art })
+  //     })
+  // }
+
+  addSongToVoting = (trackId, index) => {
+    const { token } = this.props.media
+    const { session } = this.props.sesh || "Error"
+
+    if (!token || !session) return
+    fetch("https://api.spotify.com/v1/tracks/" + trackId, {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then(response => response.json())
+      .then(json => {
+        let artist = json.artists[0].name
+        let { name, preview_url } = json
+        let preview_art = json.album.images[1].url
+        var newSongRef = firebase.ref(`/session/${session}/songs/${index}`)
+        newSongRef.set({
+          name,
+          trackId,
+          preview_url,
+          artist,
+          preview_art,
+        })
+      })
   }
 
 

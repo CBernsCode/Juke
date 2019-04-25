@@ -88,19 +88,6 @@ export default class Voting extends Component {
 
   componentDidUpdate(prevProps) {
     const { sesh } = this.props
-
-    // Compare 
-    if (sesh.status !== prevProps.sesh.status) {
-      // if the session.status goes waiting -> playing decide winning song
-      if (sesh.status === gameState.playing) {
-        this.determineWinningSong()
-        this.cleanUp()
-      }
-      // if the session.status goes playing -> waiting decide winner and runner up
-      if (sesh.status === gameState.waiting) {
-        this.determineWinner()
-      }
-    }
     if (sesh.session !== prevProps.sesh.session) {
       firebase.ref(`/session/${sesh.session}/songs`).on('value', (snapshot) => {
         let snap = snapshot.val()
@@ -109,14 +96,6 @@ export default class Voting extends Component {
         }
       })
     }
-  }
-
-  cleanUp = () => {
-    console.log("Clean Up Called")
-  }
-
-  determineWinner = () => {
-    console.log("Determine Winner Called")
   }
 
   sessionCreation = () => (
@@ -204,7 +183,7 @@ export default class Voting extends Component {
       })
       this.setState({
         pointBalance: pointBalance - total,
-        bids: Array(this.state.songs.length).fill(0)
+        bids: Array(4).fill(0)
       })
     } else {
       alert("You are trying to spend points to don't have! Please adjust your bet.")
@@ -261,30 +240,12 @@ export default class Voting extends Component {
     </List.Item>
   )
 
-  getTotals = () => {
-    firebase.ref(`/session/${this.props.sesh.session}/songs`)
-      .once('value')
-      .then(snapshot => {
-        let snap = snapshot.val()
-        !!snap && snap.map(song => {
-          let sum = 0;
-          if (!!song.bid) {
-            Object.keys(song.bid).forEach(key => {
-              sum += Number(song.bid[key] || 0)
-            })
-            console.log(sum)
-          }
-        })
-      })
-  }
-
   getSessionState = () => {
     // for explicit checks
     firebase.ref(`/session/${this.props.sesh.session}/state`)
       .once('value')
       .then(snapshot => {
         let snap = snapshot.val()
-        console.log(snap)
       })
   }
 
@@ -293,7 +254,6 @@ export default class Voting extends Component {
       .once('value')
       .then(snapshot => {
         let snap = snapshot.val()
-        console.log(snap)
       })
   }
 
