@@ -5,7 +5,7 @@ import P5Wrapper from 'react-p5-wrapper';
 export class SurvivalGame extends Component {
   componentWillUnmount(){
     let val = window.kill()
-    console.log(val)
+    console.log(`Score from Survival Game: ${val}`)
   }
 
   render() {

@@ -15,7 +15,6 @@ export default function sketch(p) {
     let oldScore = Score 
     Score = 0
     p.remove()
-    console.log(oldScore)
     return oldScore
   }
   let rotation = 0;

@@ -57,7 +57,7 @@ export default class SearchBar extends Component {
         }
       })
       .then(data => {
-        console.log(data)
+        // console.log(data)
         let s_results = data.tracks.items;
         let tracks = []
         for (let i = 0; i < s_results.length; i++) {
