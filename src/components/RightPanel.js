@@ -75,7 +75,7 @@ export default class RightPanel extends Component {
     const { status } = this.props.sesh
     switch (status) {
       case gameState.playing:
-        return null //<Game {...this.props} />
+        return <Game {...this.props} />
       case gameState.winner:
         return this.winner()
       case gameState.waiting:
