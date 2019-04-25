@@ -66,7 +66,22 @@ export default class Voting extends Component {
     firebase.ref(`/session/${sessionId}/songs`).on('value', (snapshot) => {
       let snap = snapshot.val()
       if (!!snap) {
-        this.setState({ songs: snap })
+        let songs = snap.map((song, index) => {
+          return {
+            ...song,
+            index,
+            sum: !!song.bid ? function() {
+              let sum  = 0;
+              // debugger
+              Object.keys(song.bid).forEach(key => {
+                sum += Number(song.bid[key] || 0)
+              })
+              return sum
+
+            }() : 0
+          }
+        })
+        this.setState({ songs })
       }
     })
   }
@@ -105,7 +120,18 @@ export default class Voting extends Component {
   }
 
   sessionCreation = () => (
-    <div><Button>No Session Found! </Button></div>
+    <div>
+      <Input
+        value={this.state.session}
+        onChange={e => {
+          this.setState({ session: e.target.value });
+        }}
+        className="" size="mini" placeholder='Session' />
+      <Button
+        onClick={() => this.props.sessionActions.startSession(this.state.session)}>
+        Go!
+        </Button>
+    </div>
   )
 
   componentWillUnmount = () => {
@@ -310,10 +336,10 @@ export default class Voting extends Component {
               {
                 this.state.songs
                   .sort((a, b) => {
-                    return a.bid > b.bid ? -1 : a.bid < b.bid ? 1 : 0;
+                    return a.sum > b.sum ? -1 : a.sum < b.bsumid ? 1 : 0;
                   })
                   .map((song, i) => {
-                    return this.listItem(song, i)
+                    return this.listItem(song, song.index)
                   })
               }
             </List>
