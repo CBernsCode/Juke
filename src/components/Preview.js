@@ -3,7 +3,7 @@ import { Button, Popup, Grid } from 'semantic-ui-react'
 
 export const Preview = ({ id, preview_url, preview_art, selectedTrackId, inThePool, selectFunc }) => {
   const [playing, setPlaying] = useState(false)
-  const hasPreview = (preview_url !== ""
+  const hasPreview = (preview_url !== "")
   return (
     <div
       style={{ backgroundImage: `url(${preview_art})` }}
