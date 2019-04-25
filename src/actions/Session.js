@@ -16,7 +16,7 @@ export const changeSessionState = payload => {
 export const getCurrentSession = (id) => {
   return dispatch => {
     crntSessionRef.doc(id).get().then( it => {
-      console.log(it.data())
+      // console.log(it.data())
       // this should never actualyl fail, remove || if needed 
       dispatch(startSession(it.data().session || null))
     })

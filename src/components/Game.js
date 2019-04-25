@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { Header, Segment } from 'semantic-ui-react'
-import {Jumper} from './Jumper'
 import { gameStart } from '../games/TabBeat'
 import { SurvivalGame } from './SurvivalGame'
 // import '../css/TabBeat'

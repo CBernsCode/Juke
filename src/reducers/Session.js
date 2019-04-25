@@ -2,7 +2,8 @@ import * as SessionAction from '../constants/SessionActions';
 
 export const gameState = {
   playing: "playing",
-  waiting: "waiting"
+  waiting: "waiting",
+  winner: "winner"
 }
 
 

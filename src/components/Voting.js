@@ -66,26 +66,28 @@ export default class Voting extends Component {
     firebase.ref(`/session/${sessionId}/songs`).on('value', (snapshot) => {
       let snap = snapshot.val()
       if (!!snap) {
-        this.setState({ songs: snap })
+        let songs = snap.map((song, index) => {
+          return {
+            ...song,
+            index,
+            sum: !!song.bid ? function() {
+              let sum  = 0;
+              // debugger
+              Object.keys(song.bid).forEach(key => {
+                sum += Number(song.bid[key] || 0)
+              })
+              return sum
+
+            }() : 0
+          }
+        })
+        this.setState({ songs })
       }
     })
   }
 
   componentDidUpdate(prevProps) {
     const { sesh } = this.props
-
-    // Compare 
-    if (sesh.status !== prevProps.sesh.status) {
-      // if the session.status goes waiting -> playing decide winning song
-      if (sesh.status === gameState.playing) {
-        this.determineWinningSong()
-        this.cleanUp()
-      }
-      // if the session.status goes playing -> waiting decide winner and runner up
-      if (sesh.status === gameState.waiting) {
-        this.determineWinner()
-      }
-    }
     if (sesh.session !== prevProps.sesh.session) {
       firebase.ref(`/session/${sesh.session}/songs`).on('value', (snapshot) => {
         let snap = snapshot.val()
@@ -96,16 +98,19 @@ export default class Voting extends Component {
     }
   }
 
-  cleanUp = () => {
-    console.log("Clean Up Called")
-  }
-
-  determineWinner = () => {
-    console.log("Determine Winner Called")
-  }
-
   sessionCreation = () => (
-    <div><Button>No Session Found! </Button></div>
+    <div>
+      <Input
+        value={this.state.session}
+        onChange={e => {
+          this.setState({ session: e.target.value });
+        }}
+        className="" size="mini" placeholder='Session' />
+      <Button
+        onClick={() => this.props.sessionActions.startSession(this.state.session)}>
+        Go!
+        </Button>
+    </div>
   )
 
   componentWillUnmount = () => {
@@ -178,7 +183,7 @@ export default class Voting extends Component {
       })
       this.setState({
         pointBalance: pointBalance - total,
-        bids: Array(this.state.songs.length).fill(0)
+        bids: Array(4).fill(0)
       })
     } else {
       alert("You are trying to spend points to don't have! Please adjust your bet.")
@@ -221,7 +226,7 @@ export default class Voting extends Component {
             preview_art={song.preview_art || ""}
             song_id={song.id}
             inThePool={false}
-            props={this.props} />
+            selectFunc={this.props.mediaActions.saveSelectedTrackId} />
           <div className="song-info">
             {song.name} <br />
             {song.artist}
@@ -235,30 +240,12 @@ export default class Voting extends Component {
     </List.Item>
   )
 
-  getTotals = () => {
-    firebase.ref(`/session/${this.props.sesh.session}/songs`)
-      .once('value')
-      .then(snapshot => {
-        let snap = snapshot.val()
-        !!snap && snap.map(song => {
-          let sum = 0;
-          if (!!song.bid) {
-            Object.keys(song.bid).forEach(key => {
-              sum += Number(song.bid[key] || 0)
-            })
-            console.log(sum)
-          }
-        })
-      })
-  }
-
   getSessionState = () => {
     // for explicit checks
     firebase.ref(`/session/${this.props.sesh.session}/state`)
       .once('value')
       .then(snapshot => {
         let snap = snapshot.val()
-        console.log(snap)
       })
   }
 
@@ -267,7 +254,6 @@ export default class Voting extends Component {
       .once('value')
       .then(snapshot => {
         let snap = snapshot.val()
-        console.log(snap)
       })
   }
 
@@ -310,10 +296,10 @@ export default class Voting extends Component {
               {
                 this.state.songs
                   .sort((a, b) => {
-                    return a.bid > b.bid ? -1 : a.bid < b.bid ? 1 : 0;
+                    return a.sum > b.sum ? -1 : a.sum < b.bsumid ? 1 : 0;
                   })
                   .map((song, i) => {
-                    return this.listItem(song, i)
+                    return this.listItem(song, song.index)
                   })
               }
             </List>
