@@ -2,6 +2,7 @@ import * as MediaActions from '../constants/MediaActions';
 
 const defaultObj = {
   playlist: {},
+  playlist_id: "",
   token: null,
   userId: "",
   selectedTrackId: "",
@@ -20,6 +21,11 @@ export default function mediaReducer(state = defaultObj, action) {
       return {
         ...state,
         playlist: action.payload
+      }
+    case MediaActions.LOAD_PLAYLIST_ID:
+      return {
+        ...state,
+        playlist_id: action.payload
       }
     case MediaActions.CLEAR_PLAYLIST:
       return {

@@ -19,17 +19,15 @@ export default class Playlist extends Component {
 
   componentDidMount() {
     if (!!this.props.media.token) {
-      if(this.props.media.playlist !== "") {
-        console.log("current playlist: ", this.props.media.playlist.split(":").pop())
-        var str = this.props.media.playlist
+      if(this.props.media.playlist_id !== "") {
+        var str = this.props.media.playlist_id
         var playlist_id = str.split(":").pop()
+        this.handleRetrievePlaylists()
         this.openPlaylist(playlist_id)
       }
       else {
-        console.log("no playlist currently...")
         this.handleRetrievePlaylists()
       }
-      // this.displayCurrentPlaylist()
     }
   }
 
@@ -88,7 +86,7 @@ export default class Playlist extends Component {
       }
     })
     .then(data => {
-      if (data.context.type == "playlist") {
+      if (data.context.type === "playlist") {
         mediaActions.loadPlaylist(data.context.uri)
         this.setState({
           current_playlist_id: data.context.uri,

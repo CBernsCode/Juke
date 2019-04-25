@@ -118,6 +118,8 @@ export default class Player extends Component {
     });
   }
 
+  // this can be used for various things
+  // currently being used to get playlist ID, if available
   getCurrentlyPlaying = () => {
     const { token } = this.props.media 
     const { mediaActions } = this.props
@@ -139,9 +141,8 @@ export default class Player extends Component {
       }
     })
     .then(data => {
-        console.log("currently playing: ", data.item.name, " from a(n) ", data.context.type)
-        if (data.context.type == "playlist") {
-          mediaActions.loadPlaylist(data.context.uri)
+        if (data.context.type === "playlist") {
+          mediaActions.loadPlaylistId(data.context.uri)
         }
         else {
           mediaActions.loadPlaylist("")
