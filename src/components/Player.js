@@ -141,12 +141,14 @@ export default class Player extends Component {
       }
     })
     .then(data => {
+      if (data.context !== null) {
         if (data.context.type === "playlist") {
           mediaActions.loadPlaylistId(data.context.uri)
         }
         else {
           mediaActions.loadPlaylist("")
         }
+      }
     })
     .catch(error => {
       this.setState({ error })
@@ -238,6 +240,8 @@ export default class Player extends Component {
 
   // when we receive a new update from the player
   onStateChanged = (state) => {
+    const { mediaActions } = this.props
+
     // only update if we got a real state
     if (state !== null) {
       const {
@@ -258,7 +262,9 @@ export default class Player extends Component {
         duration,
         item: currentTrack,
         is_playing
-      });
+      })
+
+      mediaActions.saveNowPlayingId(this.state.item.id)
     } else {
       // state was null, user might have swapped to another device
       this.setState({ error: "Looks like you might have swapped to another device?" });

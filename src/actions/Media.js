@@ -16,6 +16,10 @@ const loadPlaylistId = (payload) => {
   return {type: MediaActions.LOAD_PLAYLIST_ID, payload}
 }
 
+const saveNowPlayingId = (payload) => {
+  return {type: MediaActions.SAVE_NOW_PLAYING_ID, payload}
+}
+
 const fetchPlaylist = () => {
   let payload = {};
   return (dispath) => {
@@ -48,6 +52,7 @@ export default {
   exportPlaylist,
   loadPlaylist,
   loadPlaylistId,
+  saveNowPlayingId,
   fetchPlaylist,
   saveToken,
   saveUserId,

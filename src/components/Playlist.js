@@ -305,7 +305,11 @@ export default class Playlist extends Component {
 
   listTrackItem = (tracks) => (
     <List.Item key={tracks.track.id} onClick={() => this.playSong(tracks.track.id)}>
-      <Image size="mini" avatar src={tracks.track.album.images[0].url} />
+      {tracks.track.id === this.props.media.nowPlaying_id ?
+        <List.Icon name="play" size="big" />
+        :
+        <Image size="mini" avatar src={tracks.track.album.images[0].url} />
+      }
       <List.Content>
         {tracks.track.artists[0].name} <br />
         {tracks.track.name} <br />
@@ -314,8 +318,9 @@ export default class Playlist extends Component {
   )
 
   playSong = (trackId) => {
-    const { token, playlist_id } = this.props.media
+    const { token } = this.props.media
 
+    // https://developer.spotify.com/documentation/web-api/reference/player/start-a-users-playback/
     fetch("https://api.spotify.com/v1/me/player/play", {
       method: "PUT",
       headers: {
@@ -323,11 +328,14 @@ export default class Playlist extends Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        // "context_uri": `spotify:playlist:${playlist_id || ""}`,
-        "uris": [`spotify:track:${trackId}`],
-        // "offset": {"uri": `spotify:track:${trackId}`}
+        "context_uri": `spotify:playlist:${this.state.current_playlist_id}`,
+        "offset": {"uri": `spotify:track:${trackId}`}
       }),
     })
+    .catch(error => {
+      this.setState({ error })
+      console.log(error)
+    });
   }
 
   openDeleteConfirm = () => this.setState({ deleteConfirmOpen: true })
