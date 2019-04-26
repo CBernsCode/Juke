@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Preview } from './Preview'
-import { Input, List, Segment, Button } from 'semantic-ui-react';
+import { Dropdown, Input, List, Segment, Button } from 'semantic-ui-react';
 import { gameState } from '../reducers/Session';
 
 import firebase from '../firebase';
@@ -36,6 +36,7 @@ export default class Voting extends Component {
       songs: [],
       bids: Array(4).fill(0),
       pointBalance: 1000,
+      creatingSession: false
     }
   }
 
@@ -52,26 +53,15 @@ export default class Voting extends Component {
     // this.determineWinningSong()
     const sessionId = this.props.sesh.session
 
-    let key = "";
-    if (sessionId) {
-      key = sessionId
-    } else {
-      // TODO: no session work flow
-      key = firebase.ref("/session").push({
-        // chat: [{msg:"1", msg: "2"}],
-        songs: sampleData,
-        users: ["uid:123", "uid:124", "uid:125"]
-      }).key
-    }
     firebase.ref(`/session/${sessionId}/songs`).on('value', (snapshot) => {
       let snap = snapshot.val()
-      if (!!snap) {
+      if (!!snap && Array.isArray(snap)) {
         let songs = snap.map((song, index) => {
           return {
             ...song,
             index,
-            sum: !!song.bid ? function() {
-              let sum  = 0;
+            sum: !!song.bid ? function () {
+              let sum = 0;
               // debugger
               Object.keys(song.bid).forEach(key => {
                 sum += Number(song.bid[key] || 0)
@@ -89,6 +79,13 @@ export default class Voting extends Component {
   componentDidUpdate(prevProps) {
     const { sesh } = this.props
     if (sesh.session !== prevProps.sesh.session) {
+      this.detachFromSession()
+      firebase.ref(`/session/${sesh.session}/songs`).once('value', (snapshot) => {
+        let snap = snapshot.val()
+        if (!!snap) {
+          this.setState({ songs: snap })
+        }
+      })
       firebase.ref(`/session/${sesh.session}/songs`).on('value', (snapshot) => {
         let snap = snapshot.val()
         if (!!snap) {
@@ -100,16 +97,25 @@ export default class Voting extends Component {
 
   sessionCreation = () => (
     <div>
+      <h3>Enter your session id.</h3>
       <Input
-        value={this.state.session}
+        action={
+          <Button
+            onClick={() => {
+              this.props.sessionActions.setCurrentSession(this.props.acct.uid, this.state.session)
+              this.props.sessionActions.startSession(this.state.session)}}>
+            Go!
+          </Button>}
+        type='text'
         onChange={e => {
           this.setState({ session: e.target.value });
         }}
-        className="" size="mini" placeholder='Session' />
-      <Button
-        onClick={() => this.props.sessionActions.startSession(this.state.session)}>
-        Go!
-        </Button>
+        className="" size="mini" placeholder='Session' >
+      </Input>
+      <br />
+      or
+      <br />
+      <Button onClick={() => this.startNewSession()}>Start New Session</Button>
     </div>
   )
 
@@ -284,6 +290,23 @@ export default class Voting extends Component {
     firebase.ref(`/session/${this.props.sesh.session}/winner`).set(uid)
   }
 
+  startNewSession = () => {
+    const { acct, sessionActions } = this.props
+    const key = firebase.ref("/session").push({
+      songs: [],
+      state: "seeding",
+      winner: acct.uid,
+      runnerUp: acct.uid,
+      host: acct.uid,
+      users: [acct.uid]
+    }).key
+    this.setState({ songs: [] })
+    sessionActions.startSession(key)
+    sessionActions.setCurrentSession(acct.uid, key)
+    setTimeout(() => sessionActions.changeSessionState("seeding"), 500);
+
+  }
+
   render() {
     const { sesh } = this.props
     return (
@@ -291,10 +314,25 @@ export default class Voting extends Component {
         {!sesh.session
           ? <this.sessionCreation />
           : <>
-            <h4 id="point-total">You have: {this.state.pointBalance} Points</h4>
+            <h4 id="point-total">
+              You have: {this.state.pointBalance} Points
+            </h4>
+            <Dropdown item text='Options' style={{ float: "right", marginTop: "-1.5em" }}>
+              <Dropdown.Menu>
+                <Dropdown.Item
+                  onClick={() => this.props.sessionActions.startSession(null)}>
+                  Leave Session
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() => this.startNewSession()}>
+                  Start New Session</Dropdown.Item>
+                <Dropdown.Item>Invite Someone</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+            <hr />
             <List id="voting-list" divided inverted ordered size="tiny">
               {
-                this.state.songs
+                !!this.state.songs.sort && this.state.songs
                   .sort((a, b) => {
                     return a.sum > b.sum ? -1 : a.sum < b.bsumid ? 1 : 0;
                   })

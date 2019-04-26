@@ -11,15 +11,35 @@ export default class RightPanel extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      state: gameState.playing
+      state: gameState.playing,
+      seedsLeft: null
     }
   }
 
   componentDidUpdate(prevProps) {
     const { session } = this.props.sesh
-    // Typical usage (don't forget to compare props):
+    const { sessionActions } = this.props
+    const { selectedTrackId } = this.props.media
+
+    if (this.state.seedsLeft >= 0 && selectedTrackId !== prevProps.media.selectedTrackId) {
+      this.addSongToVoting(selectedTrackId, this.state.seedsLeft)
+      this.setState({ seedsLeft: this.state.seedsLeft - 1 })
+      if (this.state.seedsLeft === 0) {
+        sessionActions.changeSessionState(gameState.waiting)
+        setTimeout(() => {
+          firebase.ref(`/session/${session}/state`).set(gameState.playing)
+        }, 15000);
+      }
+    }
+
+
     if (session !== prevProps.sesh.session) {
-      const { sessionActions } = this.props
+      firebase.ref(`/session/${session}/state`).once('value', (snapshot) => {
+        const newState = snapshot.val()
+        if (!!newState) {
+          sessionActions.changeSessionState(newState)
+        }
+      })
       firebase.ref(`/session/${session}/state`).on('value', (snapshot) => {
         const newState = snapshot.val()
         if (!!newState) {
@@ -71,12 +91,12 @@ export default class RightPanel extends Component {
 
   determineWinningSong = () => {
     firebase.ref(`/session/${this.props.sesh.session}/songs`)
-    .once('value')
-    .then(snapshot => {
+      .once('value')
+      .then(snapshot => {
         let trackId = ""
         let highestBid = -1
         let snap = snapshot.val()
-        !!snap && snap.map(song => {
+        !!snap && [].concat(snap).map(song => {
           let sum = 0;
           if (!!song.bid) {
             Object.keys(song.bid).forEach(key => {
@@ -88,7 +108,6 @@ export default class RightPanel extends Component {
             trackId = song.trackId
           }
         })
-        // this.addSongToVoting('4gEAYcaZPHpFFelzdt7pBX', 0)
         console.log("swapped")
       })
   }
@@ -96,31 +115,6 @@ export default class RightPanel extends Component {
   setWinner = (uid) => {
     firebase.ref(`/session/${this.props.sesh.session}/winner`).set(uid)
   }
-
-  // getTrackInfo = (trackId, index) => {
-  //   const { token } = this.props.media
-  //   fetch("https://api.spotify.com/v1/tracks/" + trackId, {
-  //     method: "GET",
-  //     headers: {
-  //       authorization: `Bearer ${token}`,
-  //       "Content-Type": "application/json",
-  //     },
-  //   })
-  //     .then(response => response.json())
-  //     .then(json => {
-  //       let artist = json.artists[0].name
-  //       let { name, preview_url } = json
-  //       let preview_art = json.album.images[1].url
-  //       return {
-  //         name,
-  //         trackId,
-  //         preview_url,
-  //         artist,
-  //         preview_art,
-  //       }
-  //       // console.log({ name, preview_url, artist, preview_art })
-  //     })
-  // }
 
   addSongToVoting = (trackId, index) => {
     const { token } = this.props.media
@@ -146,8 +140,25 @@ export default class RightPanel extends Component {
           preview_url,
           artist,
           preview_art,
+          bid: { "0": 0 }
         })
       })
+  }
+
+  seeding = () => {
+    // this.addSongToVoting("4gEAYcaZPHpFFelzdt7pBX", 0)
+    // this.addSongToVoting("1r5J8bYOWq1Dal5jMQ06WX", 1)
+    // this.addSongToVoting("0DRAw7SODdYDqaInkjkS2v", 2) 
+    // this.addSongToVoting("44gbF5jrs7bljifR1X8ECK", 3)
+    if (this.state.seedsLeft === null) {
+      this.setState({ seedsLeft: 3 });
+    }
+    return (
+      <>
+        <h1>Choose 4 songs</h1>
+        <SearchBar {...this.props} />
+      </>
+    )
   }
 
 
@@ -178,6 +189,8 @@ export default class RightPanel extends Component {
         return this.winner()
       case gameState.waiting:
         return this.waiting()
+      case "seeding":
+        return this.seeding()
       default:
         break;
     }

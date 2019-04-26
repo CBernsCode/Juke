@@ -13,9 +13,9 @@ export const changeSessionState = payload => {
   return { type: SessionAction.CHANGE_STATE, payload }
 }
 
-export const getCurrentSession = (id) => {
+export const getCurrentSession = (uid) => {
   return dispatch => {
-    crntSessionRef.doc(id).get().then( it => {
+    crntSessionRef.doc(uid).get().then( it => {
       // console.log(it.data())
       // this should never actualyl fail, remove || if needed 
       dispatch(startSession(it.data().session || null))
@@ -23,8 +23,17 @@ export const getCurrentSession = (id) => {
   }
 }
 
+export const setCurrentSession = (uid, id) => {
+  return dispatch => {
+    crntSessionRef.doc(uid).set({session: id}).then(() => {
+      dispatch(startSession(id))
+    })
+  }
+}
+
 export default {
   changeSessionState,
+  setCurrentSession,
   endSession,
   getCurrentSession,
   startSession
