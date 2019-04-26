@@ -88,7 +88,7 @@ export default class RightPanel extends Component {
             trackId = song.trackId
           }
         })
-        // this.addSongToVoting(trackId, 0)
+        // this.addSongToVoting('4gEAYcaZPHpFFelzdt7pBX', 0)
         console.log("swapped")
       })
   }

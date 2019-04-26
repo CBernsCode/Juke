@@ -131,6 +131,7 @@ export default class Playlist extends Component {
     })
     .then(data => {
       mediaActions.loadPlaylist(data)
+      mediaActions.loadPlaylistId(id)
       this.setState({
         current_playlist_id: id,
         playlist: data,
@@ -303,7 +304,7 @@ export default class Playlist extends Component {
   )
 
   listTrackItem = (tracks) => (
-    <List.Item key={tracks.track.id}>
+    <List.Item key={tracks.track.id} onClick={() => this.playSong(tracks.track.id)}>
       <Image size="mini" avatar src={tracks.track.album.images[0].url} />
       <List.Content>
         {tracks.track.artists[0].name} <br />
@@ -311,6 +312,23 @@ export default class Playlist extends Component {
       </List.Content>
     </List.Item>
   )
+
+  playSong = (trackId) => {
+    const { token, playlist_id } = this.props.media
+
+    fetch("https://api.spotify.com/v1/me/player/play", {
+      method: "PUT",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        // "context_uri": `spotify:playlist:${playlist_id || ""}`,
+        "uris": [`spotify:track:${trackId}`],
+        // "offset": {"uri": `spotify:track:${trackId}`}
+      }),
+    })
+  }
 
   openDeleteConfirm = () => this.setState({ deleteConfirmOpen: true })
   closeDeleteConfirm = () => this.setState({ deleteConfirmOpen: false })
