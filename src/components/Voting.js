@@ -326,7 +326,6 @@ export default class Voting extends Component {
                 <Dropdown.Item
                   onClick={() => this.startNewSession()}>
                   Start New Session</Dropdown.Item>
-                <Dropdown.Item>Invite Someone</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
             <hr />
@@ -334,7 +333,7 @@ export default class Voting extends Component {
               {
                 !!this.state.songs.sort && this.state.songs
                   .sort((a, b) => {
-                    return a.sum > b.sum ? -1 : a.sum < b.bsumid ? 1 : 0;
+                    return a.sum > b.sum ? -1 : a.sum < b.sum ? 1 : 0;
                   })
                   .map((song, i) => {
                     return this.listItem(song, song.index)
