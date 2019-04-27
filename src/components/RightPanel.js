@@ -21,17 +21,18 @@ export default class RightPanel extends Component {
     const { sessionActions } = this.props
     const { selectedTrackId } = this.props.media
 
+    // Seeding logic
     if (this.state.seedsLeft >= 0 && selectedTrackId !== prevProps.media.selectedTrackId) {
       this.addSongToVoting(selectedTrackId, this.state.seedsLeft)
       this.setState({ seedsLeft: this.state.seedsLeft - 1 })
       if (this.state.seedsLeft === 0) {
         sessionActions.changeSessionState(gameState.waiting)
+        // Start game 15 seconds after seed is complete
         setTimeout(() => {
           firebase.ref(`/session/${session}/state`).set(gameState.playing)
         }, 15000);
       }
     }
-
 
     if (session !== prevProps.sesh.session) {
       firebase.ref(`/session/${session}/state`).once('value', (snapshot) => {
@@ -50,8 +51,8 @@ export default class RightPanel extends Component {
         .on('value', snapshot => {
           let snap = snapshot.val()
           if (snap === this.props.acct.uid) {
-            sessionActions.changeSessionState(gameState.winner)
             this.determineWinningSong()
+            sessionActions.changeSessionState(gameState.winner)
             console.log("Your are the winner!")
           } else if (snap === "") {
             sessionActions.changeSessionState(gameState.playing)
@@ -108,7 +109,8 @@ export default class RightPanel extends Component {
             trackId = song.trackId
           }
         })
-        console.log("swapped")
+        this.addSongToVoting(trackId)
+        console.log(trackId)
       })
   }
 
@@ -120,7 +122,12 @@ export default class RightPanel extends Component {
     const { token } = this.props.media
     const { session } = this.props.sesh || "Error"
 
-    if (!token || !session) return
+    setTimeout(() => {
+      firebase.ref(`/session/${session}/state`).set(gameState.playing)
+      firebase.ref(`/session/${session}/winner`).set("")
+    }, 15000);
+
+    if (!token || !session || !trackId) return
     fetch("https://api.spotify.com/v1/tracks/" + trackId, {
       method: "GET",
       headers: {
