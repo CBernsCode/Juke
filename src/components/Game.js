@@ -30,7 +30,7 @@ export default class Game extends Component {
           Game
         </Header>
         {/* <Jumper /> */}
-        <SurvivalGame />
+        <SurvivalGame {...this.props} />
       </Segment>
     )
   }

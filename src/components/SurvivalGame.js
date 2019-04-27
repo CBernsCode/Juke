@@ -6,6 +6,10 @@ export class SurvivalGame extends Component {
   componentWillUnmount(){
     let val = window.kill()
     console.log(`Score from Survival Game: ${val}`)
+
+    const { sessionActions } = this.props
+
+    sessionActions.addPoints(val);
   }
 
   render() {

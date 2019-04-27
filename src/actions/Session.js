@@ -17,7 +17,7 @@ export const getCurrentSession = (uid) => {
   return dispatch => {
     crntSessionRef.doc(uid).get().then( it => {
       // console.log(it.data())
-      // this should never actualyl fail, remove || if needed 
+      // this should never actually fail, remove if needed 
       dispatch(startSession(it.data().session || null))
     })
   }
@@ -31,10 +31,24 @@ export const setCurrentSession = (uid, id) => {
   }
 }
 
+export const addPoints = (points) => {
+  return dispatch => {
+    dispatch({type: SessionAction.ADD_POINTS , payload: points})
+  }
+}
+
+export const spendPoints = (points) => {
+  return dispatch => {
+    dispatch({type: SessionAction.SPEND_POINTS , payload: points})
+  }
+}
+
 export default {
   changeSessionState,
   setCurrentSession,
   endSession,
   getCurrentSession,
-  startSession
+  startSession,
+  addPoints,
+  spendPoints,
 }

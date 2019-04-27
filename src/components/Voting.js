@@ -174,28 +174,27 @@ export default class Voting extends Component {
   }
 
   handleSubmit = () => {
-    const { bids, pointBalance } = this.state
-    const { session } = this.props.sesh
+    const { bids } = this.state
+    const { sessionActions } = this.props
+    const { points, session } = this.props.sesh
 
-    // Check totals
+    // Calc total
     let total = 0
     bids.forEach(it => total += Number(it))
 
-
-    if (total < pointBalance) {
+    // if we have enough points
+    if (total < points) {
+      sessionActions.spendPoints(total);
       bids.forEach((bid, index) => {
         const ref = firebase.ref(`/session/${session}/songs/${index}/bid/`).push()
         ref.set(Number(bid))
       })
       this.setState({
-        pointBalance: pointBalance - total,
         bids: Array(4).fill(0)
       })
     } else {
       alert("You are trying to spend points to don't have! Please adjust your bet.")
     }
-
-
   }
 
   getTrackInfo = (trackId, index) => {
@@ -315,7 +314,7 @@ export default class Voting extends Component {
           ? <this.sessionCreation />
           : <>
             <h4 id="point-total">
-              You have: {this.state.pointBalance} Points
+              You have: {this.props.sesh.points} Points
             </h4>
             <Dropdown item text='Options' style={{ float: "right", marginTop: "-1.5em" }}>
               <Dropdown.Menu>
