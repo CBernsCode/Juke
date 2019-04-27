@@ -32,9 +32,11 @@ export const Preview = ({ id, preview_url, preview_art, selectedTrackId, inThePo
                   })
 
                   if (playing) {
-                    document.getElementById(id).pause()
+                    let el = document.getElementById(id)
+                    !!el && el.pause()
                   } else {
-                    document.getElementById(id).play()
+                    let el = document.getElementById(id)
+                    !!el && el.play()
                   }
                   setPlaying(!playing)
                 }}>
