@@ -41,19 +41,9 @@ export default class Voting extends Component {
   }
 
   componentDidMount = () => {
-    // Use these to seed if needed
-    // this.getTrackInfo("44gbF5jrs7bljifR1X8ECK")
-    // this.getSessionState()
-    // this.addSongToVoting("4gEAYcaZPHpFFelzdt7pBX", 0)
-    // this.addSongToVoting("1r5J8bYOWq1Dal5jMQ06WX", 1)
-    // this.addSongToVoting("0DRAw7SODdYDqaInkjkS2v", 2) 
-    // this.addSongToVoting("44gbF5jrs7bljifR1X8ECK", 3)
-    // this.setWinner("cberns223")
-    // this.getWinner()
-    // this.determineWinningSong()
-    const sessionId = this.props.sesh.session
+    const { session } = this.props.sesh
 
-    firebase.ref(`/session/${sessionId}/songs`).on('value', (snapshot) => {
+    firebase.ref(`/session/${session}/songs`).on('value', (snapshot) => {
       let snap = snapshot.val()
       if (!!snap && Array.isArray(snap)) {
         let songs = snap.map((song, index) => {
@@ -95,29 +85,7 @@ export default class Voting extends Component {
     }
   }
 
-  sessionCreation = () => (
-    <div>
-      <h3>Enter your session id.</h3>
-      <Input
-        action={
-          <Button
-            onClick={() => {
-              this.props.sessionActions.setCurrentSession(this.props.acct.uid, this.state.session)
-              this.props.sessionActions.startSession(this.state.session)}}>
-            Go!
-          </Button>}
-        type='text'
-        onChange={e => {
-          this.setState({ session: e.target.value });
-        }}
-        className="" size="mini" placeholder='Session' >
-      </Input>
-      <br />
-      or
-      <br />
-      <Button onClick={() => this.startNewSession()}>Start New Session</Button>
-    </div>
-  )
+
 
   componentWillUnmount = () => {
     this._isMounted = false;
@@ -183,11 +151,16 @@ export default class Voting extends Component {
     bids.forEach(it => total += Number(it))
 
     // if we have enough points
-    if (total < points) {
+    if (total <= points) {
       sessionActions.spendPoints(total);
       bids.forEach((bid, index) => {
         const ref = firebase.ref(`/session/${session}/songs/${index}/bid/`).push()
-        ref.set(Number(bid))
+        if (index === 3) {
+          ref.set(Number(bid))
+          this.resyncList()
+        } else {
+          ref.set(Number(bid))
+        }
       })
       this.setState({
         bids: Array(4).fill(0)
@@ -245,48 +218,29 @@ export default class Voting extends Component {
     </List.Item>
   )
 
-  getSessionState = () => {
-    // for explicit checks
-    firebase.ref(`/session/${this.props.sesh.session}/state`)
-      .once('value')
-      .then(snapshot => {
-        let snap = snapshot.val()
-      })
-  }
+  resyncList = () => {
+    const { session } = this.props.sesh
+    firebase.ref(`/session/${session}/songs`).once('value', (snapshot) => {
+      let snap = snapshot.val()
+      if (!!snap && Array.isArray(snap)) {
+        let songs = snap.map((song, index) => {
+          return {
+            ...song,
+            index,
+            sum: !!song.bid ? function () {
+              let sum = 0;
+              // debugger
+              Object.keys(song.bid).forEach(key => {
+                sum += Number(song.bid[key] || 0)
+              })
+              return sum
 
-  getWinner = () => {
-    firebase.ref(`/session/${this.props.sesh.session}/winner`)
-      .once('value')
-      .then(snapshot => {
-        let snap = snapshot.val()
-      })
-  }
-
-  determineWinningSong = () => {
-    let trackId = ""
-    let highestBid = -1
-    firebase.ref(`/session/${this.props.sesh.session}/songs`)
-      .once('value')
-      .then(snapshot => {
-        let snap = snapshot.val()
-        !!snap && snap.map(song => {
-          let sum = 0;
-          if (!!song.bid) {
-            Object.keys(song.bid).forEach(key => {
-              sum += Number(song.bid[key] || 0)
-            })
-          }
-          if (sum > highestBid) {
-            highestBid = sum
-            trackId = song.trackId
+            }() : 0
           }
         })
-        console.log(trackId)
-      })
-  }
-
-  setWinner = (uid) => {
-    firebase.ref(`/session/${this.props.sesh.session}/winner`).set(uid)
+        this.setState({ songs })
+      }
+    })
   }
 
   startNewSession = () => {
@@ -305,6 +259,31 @@ export default class Voting extends Component {
     setTimeout(() => sessionActions.changeSessionState("seeding"), 500);
 
   }
+
+  sessionCreation = () => (
+    <div>
+      <h3>Enter your session id.</h3>
+      <Input
+        action={
+          <Button
+            onClick={() => {
+              this.props.sessionActions.setCurrentSession(this.props.acct.uid, this.state.session)
+              this.props.sessionActions.startSession(this.state.session)
+            }}>
+            Go!
+          </Button>}
+        type='text'
+        onChange={e => {
+          this.setState({ session: e.target.value });
+        }}
+        className="" size="mini" placeholder='Session' >
+      </Input>
+      <br />
+      or
+      <br />
+      <Button onClick={() => this.startNewSession()}>Start New Session</Button>
+    </div>
+  )
 
   render() {
     const { sesh } = this.props
