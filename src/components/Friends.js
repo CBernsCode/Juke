@@ -61,10 +61,10 @@ export default class Friends extends Component {
         </Modal.Content>
         <Modal.Actions>
           <Button color='red' onClick={this.handleClose} inverted>
-            <Icon name='checkmark' /> Cancel
+            <Icon name='cancel' /> Cancel
           </Button>
           <Button color='green' onClick={this.handleAddFriend} inverted>
-            <Icon name='checkmark' /> Add
+            <Icon name='add' /> Add
           </Button>
         </Modal.Actions>
       </Modal>
