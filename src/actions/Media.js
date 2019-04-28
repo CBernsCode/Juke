@@ -43,7 +43,7 @@ const saveTempo = (tempo) => {
   return { type: MediaActions.SAVE_TEMPO, payload: tempo }
 }
 
-export const clearPlaylist = () => { 
+const clearPlaylist = () => { 
   return { type: MediaActions.CLEAR_PLAYLIST }
 }
 

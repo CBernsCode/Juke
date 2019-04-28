@@ -202,3 +202,8 @@ h4#point-total {
   margin-top: -2em;
   margin-bottom: 0;
 }
+
+#friends {
+  height: 40vh;
+  overflow: auto;
+}

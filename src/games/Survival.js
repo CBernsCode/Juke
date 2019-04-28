@@ -71,7 +71,7 @@ class Bullet {
       this.y = Math.random()*400
       Score++
     }
-    p.rect(this.x, this.y, 10,4);
+    p.ellipse(this.x, this.y, 10,4);
     if(collideRectRect(this.x,this.y,10,4,play.x,play.y,10,10)){
       Score -= 10
       this.x = 0
