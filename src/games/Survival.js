@@ -1,4 +1,6 @@
 import p5 from 'p5';
+import BulletImage from '../static/images/bullet.png';
+import PlayerHeart from '../static/images/Player_heart.png'
 let x;
 let Bx;
 let By;
@@ -8,9 +10,14 @@ let pLocation;
 let canvas;
 let play;
 let Score = 0;
-
+let BImage;
+let PImage;
 export default function sketch(p) {
   // window.p = p
+  p.preload = () => {
+    BImage = p.loadImage(BulletImage)
+    PImage = p.loadImage(PlayerHeart)
+  }
   window.kill = () => {
     let oldScore = Score 
     Score = 0
@@ -20,7 +27,7 @@ export default function sketch(p) {
   let rotation = 0;
   let arr = []
   for(let i = 0 ; i < 500; i += 50 ){
-    arr.push(new Bullet(i,100,6), new Bullet(i,200,6))
+    arr.push(new Bullet(i,100,2), new Bullet(i,200,2))
   }
   play = new Player(400,250)
   p.setup = function () {
@@ -40,39 +47,39 @@ export default function sketch(p) {
     arr.forEach(it => it.draw(p))
     play.draw(p)
     p.text(Score,250,50)
-  };
-  p.keyPressed = function() {
-    if(p.keyCode === p.LEFT_ARROW){
+    //player movement handling
+    if(p.keyIsDown(p.LEFT_ARROW)){
       play.x -= 5
     }
-    else if(p.keyCode === p.RIGHT_ARROW){
+    else if(p.keyIsDown(p.RIGHT_ARROW)){
       play.x += 5
     }
-    else if(p.keyCode === p.UP_ARROW){
+    else if(p.keyIsDown(p.UP_ARROW)){
       play.y -= 5
     }
-    else if(p.keyCode === p.DOWN_ARROW){
+    else if(p.keyIsDown(p.DOWN_ARROW)){
       play.y +=5
     }
-  }
+  };
 };
 class Bullet {
 
   constructor(x,y,speed = 2){
+    this.speed = speed
     this.x = x
     this.y = y
-    this.speed = speed
   }
   draw = (p) => {
+
     p.fill('#000000')
     this.x = this.x + this.speed
     if(this.x > p.width){
       this.x = 0
       this.y = Math.random()*400
       Score++
-    }
-    p.ellipse(this.x, this.y, 10,4);
-    if(collideRectRect(this.x,this.y,10,4,play.x,play.y,10,10)){
+    } 
+    p.image(BImage,this.x, this.y, 10,4);
+    if(collideRectRect(this.x,this.y,10,4,play.x,play.y,20,20)){
       Score -= 10
       this.x = 0
       this.y = Math.random()*400
@@ -86,8 +93,10 @@ class Player {
   }
 
   draw = (p) => {
-    p.fill('#ffffff')
-    p.rect(this.x, this.y, 10,10)
+    if(PlayerHeart){
+    p.image(PImage,this.x, this.y, 20,20)
+    }
+
   }
 };
 //all code from this point is not my own work. it is from the collide2D library for p5 located here https://github.com/bmoren/p5.collide2D.
