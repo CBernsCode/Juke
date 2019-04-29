@@ -32,12 +32,13 @@ export default class RightPanel extends Component {
     if (this.state.seedsLeft >= 0 && selectedTrackId !== prevProps.media.selectedTrackId) {
       this.addSongToVoting(selectedTrackId, this.state.seedsLeft)
       if (this.state.seedsLeft === 0) {
+        
         sessionActions.changeSessionState(gameState.waiting)
-        // Start game 15 seconds after seed is complete
         this.setState({ seedsLeft: null });
         setTimeout(() => {
           firebase.ref(`/session/${session}/state`).set(gameState.playing)
         }, 25000);
+
       } else {   
         this.setState({ seedsLeft: this.state.seedsLeft - 1 })
       }
@@ -48,7 +49,6 @@ export default class RightPanel extends Component {
       this.addSongToVoting(selectedTrackId, this.state.indexToReplace)
       this.setState({ selecting: false })
       firebase.ref(`/session/${session}/state`).set(gameState.playing)
-      
     }
 
     // handle session changes
@@ -116,9 +116,9 @@ export default class RightPanel extends Component {
     }
   }
 
-  addSongToPlaylist = () => {
-    const { token, selectedTrackId, playlist_id } = this.props.media
-    let track_uri = "spotify:track:" + selectedTrackId
+  addSongToPlaylist = (trackId) => {
+    const { token, playlist_id } = this.props.media
+    let track_uri = "spotify:track:" + trackId
 
     // https://developer.spotify.com/documentation/web-api/reference/playlists/add-tracks-to-playlist/
     fetch("https://api.spotify.com/v1/playlists/" + playlist_id + "/tracks", {
