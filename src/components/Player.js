@@ -12,7 +12,7 @@ import "../css/index.css";
 import Tabs from './Tabs';
 
 
-function sleep(ms) {
+export function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 

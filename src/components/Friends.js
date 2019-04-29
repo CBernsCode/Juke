@@ -5,8 +5,9 @@ export default class Friends extends Component {
   constructor() {
     super()
     this.state = {
-      uid: "",
-      name: "",
+      uid: '',
+      name: '',
+      note: '',
       modalOpen: false
     }
   }
@@ -21,18 +22,19 @@ export default class Friends extends Component {
     const { friendActions, acct } = this.props
     let d = new Date()
     friendActions.addFriend(acct.uid, {
-      name: this.state.name || "",
-      uid: this.state.uid || "",
+      name: this.state.name || '',
+      uid: this.state.uid || '',
+      note: this.state.note || '',
       added: d.toLocaleDateString(),
     })
-    this.setState({  modalOpen: false, uid: '', name: '' })
+    this.setState({ modalOpen: false, uid: '', name: '', note: '' })
   }
 
   addFriendForm = () => {
     return (
       <Modal
         trigger={
-          <Button inverted  fluid color="green" onClick={this.handleOpen}>
+          <Button inverted fluid color="green" onClick={this.handleOpen}>
             Add Friend
           </Button>
         }
@@ -56,6 +58,14 @@ export default class Friends extends Component {
                 name='uid'
                 label='User ID'
                 placeholder='User ID' />
+            </Form.Group>
+            <Form.Group widths='equal'>
+              <Form.Input
+                onChange={this.handleChange}
+                fluid
+                name='note'
+                label='Note'
+                placeholder='Note' />
             </Form.Group>
           </Form>
         </Modal.Content>
@@ -82,7 +92,7 @@ export default class Friends extends Component {
           <Icon name='add circle' />
         </Button>
         <List.Header>{friend.name}</List.Header>
-        Added: {friend.added}
+        {friend.note}
       </List.Item>
     )
   }

@@ -7,12 +7,19 @@ import firebase from '../firebase';
 import Game from './Game';
 import SearchBar from './Search';
 
+// function sleep(ms) {
+//   return new Promise(resolve => setTimeout(resolve, ms))
+// }
+
+
 export default class RightPanel extends Component {
   constructor(props) {
     super(props)
     this.state = {
       state: gameState.playing,
-      seedsLeft: null
+      seedsLeft: null,
+      selecting: false,
+      indexToReplace: 0
     }
   }
 
@@ -24,16 +31,27 @@ export default class RightPanel extends Component {
     // Seeding logic
     if (this.state.seedsLeft >= 0 && selectedTrackId !== prevProps.media.selectedTrackId) {
       this.addSongToVoting(selectedTrackId, this.state.seedsLeft)
-      this.setState({ seedsLeft: this.state.seedsLeft - 1 })
       if (this.state.seedsLeft === 0) {
         sessionActions.changeSessionState(gameState.waiting)
         // Start game 15 seconds after seed is complete
+        this.setState({ seedsLeft: null });
         setTimeout(() => {
           firebase.ref(`/session/${session}/state`).set(gameState.playing)
-        }, 15000);
+        }, 25000);
+      } else {   
+        this.setState({ seedsLeft: this.state.seedsLeft - 1 })
       }
     }
 
+    // If we won a game and we selected a song add it to voting
+    if (!!this.state.selecting && selectedTrackId !== prevProps.media.selectedTrackId) {
+      this.addSongToVoting(selectedTrackId, this.state.indexToReplace)
+      this.setState({ selecting: false })
+      firebase.ref(`/session/${session}/state`).set(gameState.playing)
+      
+    }
+
+    // handle session changes
     if (session !== prevProps.sesh.session) {
       firebase.ref(`/session/${session}/state`).once('value', (snapshot) => {
         const newState = snapshot.val()
@@ -41,29 +59,50 @@ export default class RightPanel extends Component {
           sessionActions.changeSessionState(newState)
         }
       })
+
       firebase.ref(`/session/${session}/state`).on('value', (snapshot) => {
         const newState = snapshot.val()
         if (!!newState) {
           sessionActions.changeSessionState(newState)
         }
       })
-      firebase.ref(`/session/${this.props.sesh.session}/winner`)
-        .on('value', snapshot => {
-          let snap = snapshot.val()
-          if (snap === this.props.acct.uid) {
-            this.determineWinningSong()
-            sessionActions.changeSessionState(gameState.winner)
-            console.log("Your are the winner!")
-          } else if (snap === "") {
-            sessionActions.changeSessionState(gameState.playing)
-            console.log("Playing...")
-          } else {
-            sessionActions.changeSessionState(gameState.waiting)
-            console.log("Sorry you didn't win...")
-          }
-        })
-    }
 
+      firebase.ref(`/session/${this.props.sesh.session}/winner`).on('value', snapshot => {
+        let snap = snapshot.val()
+        if (snap === this.props.acct.uid) {
+          sessionActions.changeSessionState(gameState.winner)
+          console.log("Your are the winner!")
+
+          this.determineWinningSong()
+          this.setState({ selecting: true })
+
+          setTimeout(() => {
+            firebase.ref(`/session/${session}/state`).set(gameState.playing)
+          }, 30000);
+
+        } else if (snap === "") {
+          sessionActions.changeSessionState(gameState.playing)
+          console.log("Playing...")
+
+          // setTimeout(() => {
+          //   if (Date.now() % 2 == 0) {
+          //     firebase.ref(`/session/${session}/winner`).set("")
+          //   } else {
+          //     firebase.ref(`/session/${session}/winner`).set("cberns223")
+          //   }
+          //   firebase.ref(`/session/${session}/state`).set(gameState.waiting)
+          // }, 180000);
+
+        } else {
+          sessionActions.changeSessionState(gameState.waiting)
+          console.log("Sorry you didn't win...")
+
+          // setTimeout(() => {
+          //   firebase.ref(`/session/${session}/state`).set(gameState.playing)
+          // }, 30000);
+        }
+      })
+    }
   }
 
   componentWillUnmount = () => {
@@ -75,6 +114,38 @@ export default class RightPanel extends Component {
         throw Error("Was unable to detach from session ref")
       }
     }
+  }
+
+  addSongToPlaylist = () => {
+    const { token, selectedTrackId, playlist_id } = this.props.media
+    let track_uri = "spotify:track:" + selectedTrackId
+
+    // https://developer.spotify.com/documentation/web-api/reference/playlists/add-tracks-to-playlist/
+    fetch("https://api.spotify.com/v1/playlists/" + playlist_id + "/tracks", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        "uris": [track_uri],
+      }),
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json()
+        }
+        else {
+          throw new Error("Something went wrong...")
+        }
+      })
+      .then(data => {
+        console.log("added track to playlist")
+      })
+      .catch(error => {
+        this.setState({ error })
+        console.log(error)
+      });
   }
 
   winner = () => {
@@ -97,7 +168,7 @@ export default class RightPanel extends Component {
         let trackId = ""
         let highestBid = -1
         let snap = snapshot.val()
-        !!snap && [].concat(snap).map(song => {
+        !!snap && [].concat(snap).map((song, index) => {
           let sum = 0;
           if (!!song.bid) {
             Object.keys(song.bid).forEach(key => {
@@ -107,9 +178,11 @@ export default class RightPanel extends Component {
           if (sum > highestBid) {
             highestBid = sum
             trackId = song.trackId
+            this.setState({indexToReplace: index })
           }
         })
-        this.addSongToVoting(trackId)
+        this.addSongToPlaylist(trackId)
+        // this.addSongToVoting(trackId, 3)
         console.log(trackId)
       })
   }
@@ -122,10 +195,12 @@ export default class RightPanel extends Component {
     const { token } = this.props.media
     const { session } = this.props.sesh || "Error"
 
+    // set up next round
     setTimeout(() => {
       firebase.ref(`/session/${session}/state`).set(gameState.playing)
       firebase.ref(`/session/${session}/winner`).set("")
-    }, 15000);
+      firebase.ref(`/session/${session}/nextRound`).set(Date.now() + 60000)
+    }, 20000);
 
     if (!token || !session || !trackId) return
     fetch("https://api.spotify.com/v1/tracks/" + trackId, {
@@ -140,8 +215,7 @@ export default class RightPanel extends Component {
         let artist = json.artists[0].name
         let { name, preview_url } = json
         let preview_art = json.album.images[1].url
-        var newSongRef = firebase.ref(`/session/${session}/songs/${index}`)
-        newSongRef.set({
+        firebase.ref(`/session/${session}/songs/${index || 0}`).set({
           name,
           trackId,
           preview_url,
@@ -206,8 +280,8 @@ export default class RightPanel extends Component {
   render() {
     return (
       <Segment id="right-panel" inverted >
-        <h2>TODO: Handle State Internally</h2>
-        <this.changeSeshStateBtns />
+        {/* <h2>TODO: Handle State Internally</h2> */}
+        {/* <this.changeSeshStateBtns /> */}
         {this.selector(gameState.winner)}
       </Segment>
     )

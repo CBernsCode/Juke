@@ -32,7 +32,6 @@ export default class Playlist extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    // Typical usage (don't forget to compare props):
     if (this.props.media.token !== prevProps.media.token) {
       this.handleRetrievePlaylists()
     }
@@ -373,7 +372,7 @@ export default class Playlist extends Component {
             </Grid.Row>
           </Grid>
         ]}
-        {this.state.playlists && this.state.trackView && [
+        {this.state.playlists && this.state.trackView && 
           <List id="track-names" divided inverted ordered>
             {
               this.state.playlist_tracks.items
@@ -381,8 +380,8 @@ export default class Playlist extends Component {
                   return this.listTrackItem(tracks)
                 })
             }
-          </List>,
-          <Button.Group fluid widths="8">
+          </List>
+          /*<Button.Group fluid widths="8">
             <Button
               color="green"
               inverted
@@ -410,9 +409,8 @@ export default class Playlist extends Component {
               open={this.state.deleteConfirmOpen} 
               onCancel={this.closeDeleteConfirm} 
               onConfirm={() => this.deletePlaylist(this.state.current_playlist_id)} />
-        </Button.Group>
-
-        ]}
+        </Button.Group> */
+      }
       </Segment>
     );
   }
