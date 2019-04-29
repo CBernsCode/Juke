@@ -208,3 +208,7 @@ h4#point-total {
   height: 40vh;
   overflow: auto;
 }
+
+.title-text {
+  font-family: 'Press Start 2P', cursive;
+}
