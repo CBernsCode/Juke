@@ -1,36 +1,75 @@
 import React, { useState } from 'react';
-import { Button } from 'semantic-ui-react'
+import { Button, Popup, Grid } from 'semantic-ui-react'
 
-export const Preview = ({ id, preview_url, preview_art }) => {
+export const Preview = ({ id, preview_url, preview_art, selectedTrackId, inThePool, selectFunc }) => {
   const [playing, setPlaying] = useState(false)
+  const hasPreview = (preview_url !== "")
   return (
-    <div 
+    <div
       style={{ backgroundImage: `url(${preview_art})` }}
       className="voting-song-preview">
       <video id={id} className="preview" name="media">
         <source src={preview_url} type="audio/mpeg" />
       </video>
-      <Button
-        circular
-        color='black'
-        icon={playing ? 'pause' : 'play'}
-        onClick={() => {
-          if (playing) {
-            let players = document.querySelectorAll('.preview')
-            players.forEach(player => {
-              player.pause()
-            })
-            document.getElementById(id).pause()
-          } else {
-            let players = document.querySelectorAll('.preview')
-            players.forEach(player => {
-              player.pause()
-            })
-            document.getElementById(id).play()
+      <Grid>
+        <Grid.Column width={10}>
+          <Button.Group icon>
+          { hasPreview && 
+            <Popup trigger={
+              <Button
+                id="previewButton"
+                circular
+                color='black'
+                icon={playing ? 'pause' : 'play'}
+                onClick={() => {
+                  // TODO
+                  // reset all preview icons 
+                  
+                  // pause all other previews
+                  let players = document.querySelectorAll('.preview')
+                  players.forEach(player => {
+                    player.pause()
+                  })
+
+                  if (playing) {
+                    let el = document.getElementById(id)
+                    !!el && el.pause()
+                  } else {
+                    let el = document.getElementById(id)
+                    !!el && el.play()
+                  }
+                  setPlaying(!playing)
+                }}>
+              </Button>
+            }
+            content="Preview" />
           }
-          setPlaying(!playing)
-        }}>
-      </Button>
+          { !hasPreview && 
+            <Popup trigger={
+              <Button
+                circular
+                color='black'
+                icon="close"
+                onClick={() => {return}}>
+              </Button>
+            }
+            content="No Preview Available" />
+          }
+
+            {inThePool &&
+              <Popup trigger={
+                <Button
+                  circular
+                  color='black'
+                  icon={'add'}
+                  onClick={() => { selectFunc(selectedTrackId) }}>
+                </Button>
+              }
+                content="Add" />
+            }
+          </Button.Group>
+        </Grid.Column>
+      </Grid>
     </div>
   )
 }

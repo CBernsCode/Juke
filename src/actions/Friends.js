@@ -19,7 +19,9 @@ const addFriend = (spotId, friend) => {
   debugger
   return dispatch => {
     const frndRef = friendRef.doc(spotId).collection('friends')
-    frndRef.add(friend)
+    frndRef.add(friend).then(() => {
+      dispatch(loadFriends(spotId))
+    }).catch(err => console.error(err));
 
   }
 }

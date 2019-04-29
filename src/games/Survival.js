@@ -8,8 +8,15 @@ let pLocation;
 let canvas;
 let play;
 let Score = 0;
+
 export default function sketch(p) {
-  window.p = p
+  // window.p = p
+  window.kill = () => {
+    let oldScore = Score 
+    Score = 0
+    p.remove()
+    return oldScore
+  }
   let rotation = 0;
   let arr = []
   for(let i = 0 ; i < 500; i += 50 ){
@@ -64,7 +71,7 @@ class Bullet {
       this.y = Math.random()*400
       Score++
     }
-    p.rect(this.x, this.y, 10,4);
+    p.ellipse(this.x, this.y, 10,4);
     if(collideRectRect(this.x,this.y,10,4,play.x,play.y,10,10)){
       Score -= 10
       this.x = 0

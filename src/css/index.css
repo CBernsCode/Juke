@@ -63,7 +63,7 @@ h1, h2, h3, h4 {
 
 .song-info {
   float: right;
-  margin: 1em;
+  margin-left: 1em;
 }
 
 .row {
@@ -84,10 +84,6 @@ h1, h2, h3, h4 {
   color: #fff !important;
 }
 
-.ui.pointing.secondary.menu {
-  font-size: 120%;
-}
-
 a.item {
   color: #fff !important;
 }
@@ -95,6 +91,11 @@ a.item {
 a.item.active {
   color: #fff !important;
   border-color: #2ecc40 !important;
+}
+
+.item:hover {
+  transition: background-color 0.3s ease;
+  background-color: #2ecc40;
 }
 
 #game {
@@ -113,12 +114,12 @@ button {
 }
 
 #track-names {
-  height: 48vh;
+  height: 44vh;
   overflow: auto;
 }
 
 #playlist-names{
-  height: 48vh;
+  height: 44vh;
   overflow: auto;
 }
 
@@ -143,7 +144,7 @@ h2.friend-initial {
 }
 
 #voting-list {
-  height: 46vh;
+  height: 42vh;
 }
 
 #user-name {
@@ -171,7 +172,7 @@ video {
 }
 
 div#right-panel {
-  height: 88vh;
+  height: 84vh;
   border: 1px solid #eee;
   text-align: center;
 }
@@ -187,4 +188,22 @@ div#search-results {
 
 .ui.icon.input {
   width: 100%;
+}
+
+.modal .content {
+  text-align: center;
+}
+
+.ui.page.modals.dimmer.transition.visible.active {
+  background: #000;
+}
+
+h4#point-total {
+  margin-top: -2em;
+  margin-bottom: 0;
+}
+
+#friends {
+  height: 40vh;
+  overflow: auto;
 }

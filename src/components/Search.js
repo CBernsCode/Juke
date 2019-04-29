@@ -29,12 +29,14 @@ export default class SearchBar extends Component {
   })
 
   handleSearchChange = (e, { value }) => {
-    this.setState({ isLoading: true, value })
-    // this.findTrack(value);
+    this.setState({ value })
+    // display search results while typing
+    this.findTrack(value);
   };
 
   findTrack = (value) => {
     const { token } = this.props.media
+    this.setState({ isLoading: true })
     var search = value.split(' ').join('+');
 
     // https://developer.spotify.com/documentation/web-api/reference/search/search/
@@ -55,7 +57,7 @@ export default class SearchBar extends Component {
         }
       })
       .then(data => {
-        console.log(data)
+        // console.log(data)
         let s_results = data.tracks.items;
         let tracks = []
         for (let i = 0; i < s_results.length; i++) {
@@ -68,10 +70,9 @@ export default class SearchBar extends Component {
           };
         }
         this.setState({
+          results: tracks,
           isLoading: false,
-          results: tracks
         })
-        console.log(this.state.results)
       })
       .catch(error => {
         this.setState({ error })
@@ -84,9 +85,12 @@ export default class SearchBar extends Component {
       <List.Content>
         <Preview id={index+ 'a'}
           preview_url={tracks.preview_url}
-          preview_art={tracks.image} />
+          preview_art={tracks.image} 
+          selectedTrackId={tracks.key}
+          inThePool={true} 
+          selectFunc={this.props.mediaActions.saveSelectedTrackId} />
         <List.Header>
-          {tracks.title} <br />
+          {`"${tracks.title}"`} <br />
           {tracks.description} <br />
         </List.Header>
       </List.Content>
@@ -122,6 +126,7 @@ export default class SearchBar extends Component {
       <Segment id="search-bar" inverted>
         <Grid>
           <Grid.Row>
+          <Grid.Column width={3}></Grid.Column>
             <Grid.Column width={10}>
               <Search
                 fluid={true}
@@ -131,17 +136,18 @@ export default class SearchBar extends Component {
                 // results={results}
                 // resultRenderer={resultRenderer}
                 value={value}
-                {...this.props}
+                open={false}
+                // {...this.props}
               />
             </Grid.Column>
-            <Grid.Column width={6}>
+            {/* <Grid.Column width={6}>
               <Button
                 fluid
                 color="green"
                 inverted
                 onClick={() => this.findTrack(this.state.value)} >
                 Search</Button>
-            </Grid.Column>
+            </Grid.Column> */}
           </Grid.Row>
         </Grid>
         {this.renderList()}

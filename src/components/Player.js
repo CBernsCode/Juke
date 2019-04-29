@@ -91,7 +91,7 @@ export default class Player extends Component {
   }
 
   getUserId = (token) => {
-    const { mediaActions } = this.props
+    const { mediaActions, sessionActions } = this.props
 
     fetch("https://api.spotify.com/v1/me", {
       method: "GET",
@@ -109,7 +109,46 @@ export default class Player extends Component {
       }
     })
     .then(data => {
-      mediaActions.saveUserId(data.id);
+      mediaActions.saveUserId(data.id)
+      sessionActions.getCurrentSession(data.id)
+    })
+    .catch(error => {
+      this.setState({ error })
+      console.log(error)
+    });
+  }
+
+  // this can be used for various things
+  // currently being used to get playlist ID, if available
+  getCurrentlyPlaying = () => {
+    const { token } = this.props.media 
+    const { mediaActions } = this.props
+
+    // https://developer.spotify.com/documentation/web-api/reference/player/get-the-users-currently-playing-track/
+    fetch("https://api.spotify.com/v1/me/player/currently-playing", {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json()
+      }
+      else {
+        throw new Error("Something went wrong...")
+      }
+    })
+    .then(data => {
+      if (data.context !== null) {
+        if (data.context.type === "playlist") {
+          mediaActions.loadPlaylistId(data.context.uri)
+        }
+        else {
+          mediaActions.loadPlaylist("")
+        }
+      }
     })
     .catch(error => {
       this.setState({ error })
@@ -201,6 +240,8 @@ export default class Player extends Component {
 
   // when we receive a new update from the player
   onStateChanged = (state) => {
+    const { mediaActions } = this.props
+
     // only update if we got a real state
     if (state !== null) {
       const {
@@ -211,38 +252,35 @@ export default class Player extends Component {
       const is_playing = !state.paused;
 
       // Get tempo
-      this.getBPM();
+      this.getBPM()
+
+      // Get information on currently playing track
+      this.getCurrentlyPlaying()
 
       this.setState({
         position,
         duration,
         item: currentTrack,
         is_playing
-      });
+      })
+
+      mediaActions.saveNowPlayingId(this.state.item.id)
     } else {
       // state was null, user might have swapped to another device
       this.setState({ error: "Looks like you might have swapped to another device?" });
     }
   }
 
-  onPrevClick = () => {
-    this.player.previousTrack();
-  }
-
-  onPlayClick = () => {
-    this.player.togglePlay();
-  }
-
-  onNextClick = () => {
-    this.player.nextTrack();
-  }
+  onPrevClick = () => { this.player.previousTrack() }
+  onPlayClick = () => { this.player.togglePlay() }
+  onNextClick = () => { this.player.nextTrack() }
 
   render() {
     const { is_playing } = this.state;
 
     return (
       <Segment id="player" inverted padded={false}>
-        {/* Get token */}
+        {/* Get token
         {!this.state.token && (
           <Button 
             style={{
@@ -258,7 +296,6 @@ export default class Player extends Component {
           </Button>
         )}
         {/* Display player once token acquired */}
-        {this.state.token && (
           <Grid >
             <Grid.Row verticalAlign='middle'>
               <Grid.Column width={4}>
@@ -305,8 +342,6 @@ export default class Player extends Component {
               </Grid.Column>
             </Grid.Row>
           </Grid>
-        )
-        }
       </Segment>
 
     );

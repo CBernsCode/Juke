@@ -9,17 +9,17 @@ export class Tabs extends Component {
   render() {
     let panes = [
       {
-        menuItem: 'Game',
-        render: () =>
-          <Tab.Pane attached={false}>
-            <Voting  {...this.props} />
-          </Tab.Pane>
-      },
-      {
         menuItem: 'Playlist',
         render: () =>
           <Tab.Pane attached={false}>
             <Playlist {...this.props} />
+          </Tab.Pane>
+      },
+      {
+        menuItem: 'Bidding',
+        render: () =>
+          <Tab.Pane attached={false}>
+            <Voting  {...this.props} />
           </Tab.Pane>
       },
       {

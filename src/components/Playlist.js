@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Container, Segment, Button, List, Image, Icon } from 'semantic-ui-react';
+import { Segment, Button, List, Image, Icon, Grid, Input, Confirm } from 'semantic-ui-react';
 import "../css/index.css";
 
 export default class Playlist extends Component {
@@ -10,13 +10,30 @@ export default class Playlist extends Component {
       playlists: null,
       playlist_tracks: null,
       current_playlist_id: "",
+      new_playlist_name: "",
       trackView: false,
       error: null,
+      deleteConfirmOpen: false,
     };
   }
 
   componentDidMount() {
     if (!!this.props.media.token) {
+      if(this.props.media.playlist_id !== "") {
+        var str = this.props.media.playlist_id
+        var playlist_id = str.split(":").pop()
+        this.handleRetrievePlaylists()
+        this.openPlaylist(playlist_id)
+      }
+      else {
+        this.handleRetrievePlaylists()
+      }
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    // Typical usage (don't forget to compare props):
+    if (this.props.media.token !== prevProps.media.token) {
       this.handleRetrievePlaylists()
     }
   }
@@ -48,7 +65,53 @@ export default class Playlist extends Component {
     });
   }
 
+  displayCurrentPlaylist = () => {
+    const { token } = this.props.media 
+    const { mediaActions } = this.props
+
+    // https://developer.spotify.com/documentation/web-api/reference/player/get-the-users-currently-playing-track/
+    fetch("https://api.spotify.com/v1/me/player/currently-playing", {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json()
+      }
+      else {
+        throw new Error("Something went wrong...")
+      }
+    })
+    .then(data => {
+      if (data.context.type === "playlist") {
+        mediaActions.loadPlaylist(data.context.uri)
+        this.setState({
+          current_playlist_id: data.context.uri,
+        })
+      }
+      else {
+        mediaActions.loadPlaylist("")
+      }
+    })
+    .catch(error => {
+      this.setState({ error })
+      console.log(error)
+    })
+    .then(() => {
+      if (this.state.current_playlist_id !== "") {
+        this.openPlaylist(this.state.current_playlist_id)
+      }
+      else {
+        this.handleRetrievePlaylists()
+      }
+    })
+  }
+
   openPlaylist = (id) => {
+    const { mediaActions } = this.props
     const { token } = this.props.media
     // https://developer.spotify.com/documentation/web-api/reference/playlists/get-playlists-tracks/
     fetch("https://api.spotify.com/v1/playlists/" + id, {
@@ -67,6 +130,8 @@ export default class Playlist extends Component {
       }
     })
     .then(data => {
+      mediaActions.loadPlaylist(data)
+      mediaActions.loadPlaylistId(id)
       this.setState({
         current_playlist_id: id,
         playlist: data,
@@ -80,23 +145,19 @@ export default class Playlist extends Component {
     });
   }
 
-  createPlaylist = () => {
-    const { token, userId } = this.props.media
-    // TODO
-    // user defined playlist names
-    let name = "test";
+  addSongToPlaylist = () => {
+    const { token, selectedTrackId } = this.props.media
+    let track_uri = "spotify:track:" + selectedTrackId
 
-    // https://developer.spotify.com/documentation/web-api/reference-beta/#endpoint-change-playlist-details
-    fetch("https://api.spotify.com/v1/users/" + userId + "/playlists", {
+    // https://developer.spotify.com/documentation/web-api/reference/playlists/add-tracks-to-playlist/
+    fetch("https://api.spotify.com/v1/playlists/" + this.state.current_playlist_id + "/tracks", {
       method: "POST",
       headers: {
         authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        "name": name,
-        "public": false,
-        "collaborative": true,
+        "uris": [track_uri],
       }),
     })
     .then(response => {
@@ -104,13 +165,12 @@ export default class Playlist extends Component {
         return response.json()
       }
       else {
+        debugger
         throw new Error("Something went wrong...")
       }
     })
     .then(data => {
-      this.setState({
-        trackView: false,
-      })
+      console.log("added track to playlist")
     })
     .catch(error => {
       this.setState({ error })
@@ -118,33 +178,53 @@ export default class Playlist extends Component {
     });
   }
 
-  // check to see if playlist is set to collaborative or not
-  playlistIsCollaborative = (id) => {
-    const { token } = this.props.media
-    // https://developer.spotify.com/documentation/web-api/reference/playlists/get-playlist/
-    fetch("https://api.spotify.com/v1/playlists/" + id, {
-      method: "GET",
-      headers: {
-        authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    })
-    .then(response => {
-      if (response.ok) {
-        return response.json()
-      }
-      else {
-        throw new Error("Something went wrong...")
-      }
-    })
-    .then(data => {
-      console.log("is playlist collab: ", data.collaborative)
-      return data.collaborative
-    })
-    .catch(error => {
-      this.setState({ error })
-      console.log(error)
-    });
+  handleInputChange = (e) => {
+    this.setState({ new_playlist_name: e.target.value })
+  }
+
+  createPlaylist = () => {
+    const { token, userId } = this.props.media
+
+    // only create playlist with valid name
+    if (this.state.new_playlist_name !== "") {
+      // https://developer.spotify.com/documentation/web-api/reference-beta/#endpoint-change-playlist-details
+      fetch("https://api.spotify.com/v1/users/" + userId + "/playlists", {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          "name": this.state.new_playlist_name,
+          "public": false,
+          "collaborative": true,
+        }),
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json()
+        }
+        else {
+          throw new Error("Something went wrong...")
+        }
+      })
+      .then(data => {
+        this.setState({
+          trackView: false,
+        })
+        // Rerender playlist view to display the new playlist
+        this.handleRetrievePlaylists()
+      })
+      .catch(error => {
+        this.setState({ error })
+        console.log(error)
+      });
+    }
+    else {
+      console.log("Invalid playlist name")
+    }
+
+
   }
 
   // Make playlist collaborative
@@ -161,8 +241,6 @@ export default class Playlist extends Component {
       isPublic = true
       isCollaborative = false
     }
-
-    console.log("CHANGING\nisPublic: ", isPublic, "\isCollab: ", isCollaborative)
     
     // https://developer.spotify.com/documentation/web-api/reference-beta/#endpoint-change-playlist-details
     fetch("https://api.spotify.com/v1/playlists/" + id, {
@@ -186,14 +264,38 @@ export default class Playlist extends Component {
     
   }
 
+  // Note: This does not actually delete the playlist as there is no such endpoint in the API
+  // This will make the current user unfollow the specified playlist
+  //  which is actually the same as deleting a playlist in Spotify
+  deletePlaylist = (id) => {
+    const { token } = this.props.media
+
+    // https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-playlist/
+    fetch("https://api.spotify.com/v1/playlists/" + id + "/followers", {
+      method: "DELETE",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+    })
+    .then(() => {
+      // take the user back to the playlist view and update the playlists
+      this.setState({ 
+        trackView: false, 
+        playlist: null, 
+        playlists: null,
+        deleteConfirmOpen: false,
+      })
+      this.handleRetrievePlaylists()
+    })
+  }
+
   listPlaylistItem = (playlist) => (
     <List.Item key={playlist.id} onClick={() => this.openPlaylist(playlist.id)}>
       {playlist.images[0] ?
         <Image size="mini" avatar src={playlist.images[0].url} />
         :
-        // TODO
-        // Change to question mark or something
-        <Icon name='play' />
+        <Icon size="large" name='question' />
       }
       <List.Content>
         {playlist.name}
@@ -202,14 +304,42 @@ export default class Playlist extends Component {
   )
 
   listTrackItem = (tracks) => (
-    <List.Item key={tracks.track.id}>
-      <Image size="mini" avatar src={tracks.track.album.images[0].url} />
+    <List.Item key={tracks.track.id} onClick={() => this.playSong(tracks.track.id)}>
+      {tracks.track.id === this.props.media.nowPlaying_id ?
+        <List.Icon name="play" size="big" />
+        :
+        <Image size="mini" avatar src={tracks.track.album.images[0].url} />
+      }
       <List.Content>
         {tracks.track.artists[0].name} <br />
         {tracks.track.name} <br />
       </List.Content>
     </List.Item>
   )
+
+  playSong = (trackId) => {
+    const { token } = this.props.media
+
+    // https://developer.spotify.com/documentation/web-api/reference/player/start-a-users-playback/
+    fetch("https://api.spotify.com/v1/me/player/play", {
+      method: "PUT",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        "context_uri": `spotify:playlist:${this.state.current_playlist_id}`,
+        "offset": {"uri": `spotify:track:${trackId}`}
+      }),
+    })
+    .catch(error => {
+      this.setState({ error })
+      console.log(error)
+    });
+  }
+
+  openDeleteConfirm = () => this.setState({ deleteConfirmOpen: true })
+  closeDeleteConfirm = () => this.setState({ deleteConfirmOpen: false })
 
   render() {
 
@@ -224,15 +354,24 @@ export default class Playlist extends Component {
                 })
             }
           </List>,
-          <Button.Group fluid>
-            <Button
-              fluid
-              color="green"
-              inverted
-              onClick={() => this.createPlaylist()} >
-              New Playlist
-            </Button>
-          </Button.Group>
+          <Grid>
+            <Grid.Row>
+              <Grid.Column width={8}>
+                <Input fluid onChange={this.handleInputChange} placeholder="New Playlist Name..."/>
+              </Grid.Column>
+              <Grid.Column width={8}>
+                <Button.Group fluid>
+                  <Button
+                    fluid
+                    color="green"
+                    inverted
+                    onClick={() => this.createPlaylist()} >
+                    Create New Playlist
+                  </Button>
+                </Button.Group>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
         ]}
         {this.state.playlists && this.state.trackView && [
           <List id="track-names" divided inverted ordered>
@@ -253,13 +392,24 @@ export default class Playlist extends Component {
             <Button
               color="green"
               inverted
+              style={{padding: 0}}
               onClick={() => this.toggleCollaborative(this.state.current_playlist_id)} >
               {
-                this.playlistIsCollaborative(this.state.current_playlist_id)
+                this.state.playlist.collaborative
                   ? "Undo Collaborative"  
                   : "Make Collaborative"
               }
-          </Button> 
+            </Button> 
+            <Button
+              color="red"
+              inverted
+              onClick={ this.openDeleteConfirm }>
+              Delete Playlist
+            </Button>
+            <Confirm 
+              open={this.state.deleteConfirmOpen} 
+              onCancel={this.closeDeleteConfirm} 
+              onConfirm={() => this.deletePlaylist(this.state.current_playlist_id)} />
         </Button.Group>
 
         ]}

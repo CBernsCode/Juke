@@ -1,14 +1,17 @@
 import * as MediaActions from '../constants/MediaActions';
 
 const defaultObj = {
-  playlist: [],
+  playlist: {},
+  playlist_id: "",
+  nowPlaying_id: "",
   token: null,
   userId: "",
+  selectedTrackId: "",
   tempo: 0,
 }
 
 
-export default function mediaReducer(state = defaultObj, action ){
+export default function mediaReducer(state = defaultObj, action) {
   switch (action.type) {
     case MediaActions.ADD_TO_PLAYLIST:
       return {
@@ -18,7 +21,17 @@ export default function mediaReducer(state = defaultObj, action ){
     case MediaActions.LOAD_PLAYLIST:
       return {
         ...state,
-        playlist: [...action.payload]
+        playlist: action.payload
+      }
+    case MediaActions.LOAD_PLAYLIST_ID:
+      return {
+        ...state,
+        playlist_id: action.payload
+      }
+    case MediaActions.SAVE_NOW_PLAYING_ID:
+      return {
+        ...state,
+        nowPlaying_id: action.payload
       }
     case MediaActions.CLEAR_PLAYLIST:
       return {
@@ -35,7 +48,12 @@ export default function mediaReducer(state = defaultObj, action ){
         ...state,
         userId: action.payload
       }
-      case MediaActions.SAVE_TEMPO:
+    case MediaActions.SAVE_SELECTED_TRACK_ID:
+      return {
+        ...state,
+        selectedTrackId: action.payload
+      }
+    case MediaActions.SAVE_TEMPO:
       return {
         ...state,
         tempo: action.payload
