@@ -232,8 +232,14 @@ export default class RightPanel extends Component {
     // this.addSongToVoting("0DRAw7SODdYDqaInkjkS2v", 2) 
     // this.addSongToVoting("44gbF5jrs7bljifR1X8ECK", 3)
     if (this.state.seedsLeft === null) {
-      this.setState({ seedsLeft: 3 });
+      this.setState({ seedsLeft: 3 })
     }
+
+    // in 30 seconds set it to null if we get a seeding error
+    setTimeout(() => {
+      this.setState({ seedsLeft: null })
+    }, 30000)
+
     return (
       <>
         <h1>Choose 4 songs</h1>
@@ -281,8 +287,8 @@ export default class RightPanel extends Component {
     return (
       <Segment id="right-panel" inverted >
         {/* <h2>TODO: Handle State Internally</h2> */}
-        {/* <this.changeSeshStateBtns /> */}
         {this.selector(gameState.winner)}
+        <this.changeSeshStateBtns />
       </Segment>
     )
   }
