@@ -1,22 +1,14 @@
-import p5 from 'p5';
 import BulletImage from '../static/images/bullet2.png';
 import PlayerL from '../static/images/PlayerL.png'
 import PlayerR from '../static/images/PlayerR.png'
 import PlayerU from '../static/images/PlayerU.png'
 import PlayerD from '../static/images/PlayerD.png'
 import BonusStar from '../static/images/BonusStar.png'
-let x;
-let Bx;
-let By;
-let y;
-let bullet;
-let pLocation;
-let canvas;
+
 let play;
 let Score = 0;
 let BImage;
-let PImage;
-let direction;//using 1 for left, 2 for up, 3 for right, and 4 for down for player movement
+
 let PIL;
 let PIR;
 let PIU;
@@ -133,8 +125,8 @@ class Bullet {
     if (play.direction === 1 || play.direction === 3) {
       if(collideRectRect(this.x,this.y,10,4,(play.x+2),play.y,30,13)){
         Score -= 10
-        if(score < 0){
-          score = 0
+        if(Score < 0){
+          Score = 0
         }
         this.x = 0
         this.y = Math.random()*400
@@ -143,8 +135,8 @@ class Bullet {
     else if(play.direction === 2 || play.direction === 4){
       if(collideRectRect(this.x,this.y,10,4,play.x,(play.y + 2),13,30)){
         Score -= 10
-        if(score < 0){
-          score = 0
+        if(Score < 0){
+          Score = 0
         }
         this.x = 0
         this.y = Math.random()*400

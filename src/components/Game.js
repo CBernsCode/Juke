@@ -10,9 +10,8 @@ const GAME_STATUS = {
 }
 
 let date = new Date();
-let min = date.getMinutes();
-let diffGames = Math.floor(min) % 2;
 
+date.getMinutes();
 export default class Game extends Component {
   constructor(props) {
     super(props);
@@ -29,7 +28,7 @@ export default class Game extends Component {
           Game
         </Header>
         <div>
-          {diffGames ? <TapGame {...this.props} /> : <SurvivalGame  {...this.props}/>}
+          { Math.floor(date.getMinutes()) % 2 ? <TapGame {...this.props} /> : <SurvivalGame  {...this.props}/>}
         </div>
         {/* <Jumper /> */}
         {/* <SurvivalGame {...this.props} /> */}

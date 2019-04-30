@@ -96,15 +96,41 @@ export default class Friends extends Component {
       </List.Item>
     )
   }
-  render = () => (
-    <Segment inverted >
-      <h4>Add your friends to the session.</h4>
-      <List id="friends" size={"large"}>
-        {
-          this.props.friends.map(friend => this.frienditem(friend))
-        }
-      </List>
-      <this.addFriendForm />
-    </Segment>
-  )
+
+  copySessiontoClip = () => {
+    var copyText = document.getElementById("sesh-id");
+
+    /* Select the text field */
+    copyText.select();
+  
+    /* Copy the text inside the text field */
+    document.execCommand("copy");
+  }
+
+  render = () => {
+    const { sesh } = this.props
+    return (
+      <Segment inverted >
+          Add your friends to the session.
+          <Button 
+            content='Copy to Clipboard'
+            icon="copy"
+            style={{float: "right"}} 
+            color='green' 
+            onClick={this.copySessiontoClip} 
+            inverted>
+            {/* <Icon name='copy' /> */}
+          </Button>
+          <br />
+        <List id="friends" size={"large"}>
+          {
+            this.props.friends.map(friend => this.frienditem(friend))
+          }
+        </List>
+        <this.addFriendForm />
+        <input type="text" stlye={{display: "none"}} value={sesh.session} id="sesh-id"></input>
+        {/* <span id="sesh-id" stlye={{display: "none"}}>{sesh.session}</span> */}
+      </Segment>
+    )
+  }
 }
