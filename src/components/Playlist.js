@@ -17,6 +17,20 @@ export default class Playlist extends Component {
     };
   }
 
+  componentDidMount() {
+    if (!!this.props.media.token) {
+      if (this.props.media.playlist_id !== "") {
+        var str = this.props.media.playlist_id
+        var playlist_id = str.split(":").pop()
+        this.handleRetrievePlaylists()
+        this.openPlaylist(playlist_id)
+      }
+      else {
+        this.handleRetrievePlaylists()
+      }
+    }
+  }
+
   componentDidUpdate(prevProps) {
     const { media } = this.props
     if (media.token !== prevProps.media.token) {
@@ -254,15 +268,22 @@ export default class Playlist extends Component {
 
   listTrackItem = (tracks) => (
     <List.Item key={tracks.track.id} onClick={() => this.playSong(tracks.track.id)}>
+      <Image size="mini" avatar src={tracks.track.album.images[0].url} />
       {tracks.track.id === this.props.media.nowPlaying_id ?
-        <List.Icon name="play" size="big" />
+        <>
+          <List.Content className="now-playing">
+            {tracks.track.artists[0].name} <br />
+            {tracks.track.name} <br />
+          </List.Content>
+        </>
         :
-        <Image size="mini" avatar src={tracks.track.album.images[0].url} />
+        <>
+          <List.Content>
+            {tracks.track.artists[0].name} <br />
+            {tracks.track.name} <br />
+          </List.Content>
+        </>
       }
-      <List.Content>
-        {tracks.track.artists[0].name} <br />
-        {tracks.track.name} <br />
-      </List.Content>
     </List.Item>
   )
 
