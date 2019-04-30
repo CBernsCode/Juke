@@ -67,7 +67,18 @@ export default class Voting extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { sesh } = this.props
+    const { sesh, sessionActions } = this.props
+
+    if (sesh.status !== prevProps.sesh.status) {
+      sessionActions.spendPoints(sesh.points);
+      firebase.ref(`/session/${sesh.session}/songs`).once('value', (snapshot) => {
+        let snap = snapshot.val()
+        if (!!snap) {
+          this.setState({ songs: snap })
+        }
+      })
+    }
+
     if (sesh.session !== prevProps.sesh.session) {
       this.detachFromSession()
       firebase.ref(`/session/${sesh.session}/songs`).once('value', (snapshot) => {
@@ -101,34 +112,6 @@ export default class Voting extends Component {
         throw Error("Was unable to detach from session ref")
       }
     }
-  }
-
-  addSongToVoting = (trackId, index) => {
-    const { token } = this.props.media
-    const { session } = this.props.sesh || "Error"
-
-    if (!token || !session) return
-    fetch("https://api.spotify.com/v1/tracks/" + trackId, {
-      method: "GET",
-      headers: {
-        authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then(response => response.json())
-      .then(json => {
-        let artist = json.artists[0].name
-        let { name, preview_url } = json
-        let preview_art = json.album.images[1].url
-        var newSongRef = firebase.ref(`/session/${session}/songs/${index}`)
-        newSongRef.set({
-          name,
-          trackId,
-          preview_url,
-          artist,
-          preview_art,
-        })
-      })
   }
 
   handleMessage = (e, id) => {
@@ -244,14 +227,16 @@ export default class Voting extends Component {
   }
 
   startNewSession = () => {
-    const { acct, sessionActions } = this.props
+    const { acct, media, sessionActions } = this.props
     const key = firebase.ref("/session").push({
       songs: [],
       state: "seeding",
-      winner: acct.uid,
+      winner: "",
       runnerUp: acct.uid,
       host: acct.uid,
-      users: [acct.uid]
+      users: [acct.uid],
+      playlist: media.playlist_id
+
     }).key
     this.setState({ songs: [] })
     sessionActions.startSession(key)

@@ -48,7 +48,7 @@ h1, h2, h3, h4 {
 .bid-input {
   margin: 15px 0;
   width: 8em;
-  height: 3em;
+  height: 4em;
 } 
 
 #voting-list .content{
@@ -64,6 +64,7 @@ h1, h2, h3, h4 {
 .song-info {
   float: right;
   margin-left: 1em;
+  max-width: 10em;
 }
 
 .row {
@@ -206,4 +207,8 @@ h4#point-total {
 #friends {
   height: 40vh;
   overflow: auto;
+}
+
+.title-text {
+  font-family: 'Press Start 2P', cursive;
 }
