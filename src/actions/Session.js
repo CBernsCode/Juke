@@ -1,5 +1,6 @@
 import * as SessionAction from '../constants/SessionActions';
 import { crntSessionRef } from '../firebase';
+import { loadPlaylistId } from './Media';
 
 const endSession = payload => {
   return { type: SessionAction.END_SESSION, payload }
@@ -19,6 +20,7 @@ const getCurrentSession = (uid) => {
       // console.log(it.data())
       // this should never actually fail, remove if needed 
       dispatch(startSession(it.data().session || null))
+      dispatch(loadPlaylistId(it.data().playlist || "spotify:user:cberns223:playlist:6TYhr4OZQcYUlGx8RLGhuQ"))
     })
   }
 }

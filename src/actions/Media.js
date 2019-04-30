@@ -12,7 +12,7 @@ const loadPlaylist = (payload) => {
   return {type: MediaActions.LOAD_PLAYLIST, payload}
 }
 
-const loadPlaylistId = (payload) => {
+export const loadPlaylistId = (payload) => {
   return {type: MediaActions.LOAD_PLAYLIST_ID, payload}
 }
 

@@ -50,8 +50,8 @@ export default class Friends extends Component {
                 onChange={this.handleChange}
                 fluid
                 name='name'
-                label='User Name'
-                placeholder='User Name' />
+                label='Display Name'
+                placeholder='Display Name' />
               <Form.Input
                 onChange={this.handleChange}
                 fluid

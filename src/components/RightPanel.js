@@ -238,7 +238,7 @@ export default class RightPanel extends Component {
     // in 30 seconds set it to null if we get a seeding error
     setTimeout(() => {
       this.setState({ seedsLeft: null })
-    }, 30000)
+    }, 60000)
 
     return (
       <>
@@ -286,9 +286,9 @@ export default class RightPanel extends Component {
   render() {
     return (
       <Segment id="right-panel" inverted >
+        <this.changeSeshStateBtns />
         {/* <h2>TODO: Handle State Internally</h2> */}
         {this.selector(gameState.winner)}
-        <this.changeSeshStateBtns />
       </Segment>
     )
   }
