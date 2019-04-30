@@ -193,8 +193,9 @@ h4#point-total {
 }
 
 #friends {
-  height: 40vh;
+  height: 38vh;
   overflow: auto;
+  margin-top: 2.5em;
 }
 
 .title-text {
@@ -204,4 +205,8 @@ h4#point-total {
 .now-playing {
   color: #2ecc40;
   font-style: oblique;
+}
+
+#sesh-id {
+  display: none;
 }
