@@ -1,6 +1,7 @@
 import p5 from 'p5';
+=======
 import BulletImage from '../static/images/bullet2.png';
-import PlayerHeart from '../static/images/Player_heart.png'
+import PlayerHeart from '../static/images/Player.png'
 let x;
 let Bx;
 let By;
@@ -79,7 +80,7 @@ class Bullet {
       Score++
     } 
     p.image(BImage,this.x, this.y, 10,4);
-    if(collideRectRect(this.x,this.y,10,4,play.x,play.y,20,20)){
+    if(collideRectRect(this.x,this.y,10,4,(play.x+2),play.y,30,13)){
       Score -= 10
       this.x = 0
       this.y = Math.random()*400
@@ -94,7 +95,7 @@ class Player {
 
   draw = (p) => {
     if(PlayerHeart){
-    p.image(PImage,this.x, this.y, 20,20)
+    p.image(PImage,this.x, this.y, 30,15)
     }
 
   }
