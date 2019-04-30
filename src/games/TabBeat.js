@@ -74,7 +74,7 @@ export const TapBeat = () => {
 
   function updateScore() {
     let scoreText = document.getElementById("score");
-    score++;
+    score += 10;
     scoreText.innerText = "Score : " + score;
   }
 }

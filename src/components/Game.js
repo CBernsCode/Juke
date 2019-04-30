@@ -29,7 +29,7 @@ export default class Game extends Component {
           Game
         </Header>
         <div>
-          {diffGames ? <TapGame/> : <SurvivalGame  {...this.props}/>}
+          {diffGames ? <TapGame {...this.props} /> : <SurvivalGame  {...this.props}/>}
         </div>
         {/* <Jumper /> */}
         {/* <SurvivalGame {...this.props} /> */}

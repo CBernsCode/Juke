@@ -7,7 +7,10 @@ export class TapGame extends Component {
     }
 
     componentWillUnmount() {
-        let tapScore = window.kill()
+        const { sessionActions } = this.props
+
+        let val = window.kill()
+        sessionActions.addPoints(val);
     }
 
     render() {
