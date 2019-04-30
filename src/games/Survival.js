@@ -1,5 +1,4 @@
 import p5 from 'p5';
-=======
 import BulletImage from '../static/images/bullet2.png';
 import PlayerHeart from '../static/images/Player.png'
 let x;

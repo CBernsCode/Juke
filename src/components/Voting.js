@@ -227,7 +227,7 @@ export default class Voting extends Component {
   }
 
   startNewSession = () => {
-    const { acct, media, sessionActions } = this.props
+    const { acct, media, mediaActions, sessionActions } = this.props
     const key = firebase.ref("/session").push({
       songs: [],
       state: "seeding",
@@ -241,13 +241,14 @@ export default class Voting extends Component {
     this.setState({ songs: [] })
     sessionActions.startSession(key)
     sessionActions.setCurrentSession(acct.uid, key)
+    // mediaActions.loadPlaylistId(null)
     setTimeout(() => sessionActions.changeSessionState("seeding"), 500);
 
   }
 
   sessionCreation = () => (
-    <div>
-      <h3>Enter your session id.</h3>
+    <Segment textAlign="center" inverted>
+      <h3>Enter A Session ID</h3>
       <Input
         action={
           <Button
@@ -267,7 +268,7 @@ export default class Voting extends Component {
       or
       <br />
       <Button onClick={() => this.startNewSession()}>Start New Session</Button>
-    </div>
+    </Segment>
   )
 
   render() {
