@@ -133,6 +133,9 @@ class Bullet {
     if (play.direction === 1 || play.direction === 3) {
       if(collideRectRect(this.x,this.y,10,4,(play.x+2),play.y,30,13)){
         Score -= 10
+        if(score < 0){
+          score = 0
+        }
         this.x = 0
         this.y = Math.random()*400
       }
