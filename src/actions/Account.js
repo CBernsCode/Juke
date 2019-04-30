@@ -1,10 +1,10 @@
 import * as AcctActions from '../constants/AccountActions';
 
-export const login = payload => {
+const login = payload => {
   return { type: AcctActions.LOGIN, payload }
 }
 
-export const logout = payload => {
+const logout = payload => {
   return { type: AcctActions.LOGOUT, payload }
 }
 

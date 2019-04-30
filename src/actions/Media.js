@@ -12,6 +12,14 @@ const loadPlaylist = (payload) => {
   return {type: MediaActions.LOAD_PLAYLIST, payload}
 }
 
+export const loadPlaylistId = (payload) => {
+  return {type: MediaActions.LOAD_PLAYLIST_ID, payload}
+}
+
+const saveNowPlayingId = (payload) => {
+  return {type: MediaActions.SAVE_NOW_PLAYING_ID, payload}
+}
+
 const fetchPlaylist = () => {
   let payload = {};
   return (dispath) => {
@@ -35,7 +43,7 @@ const saveTempo = (tempo) => {
   return { type: MediaActions.SAVE_TEMPO, payload: tempo }
 }
 
-export const clearPlaylist = () => { 
+const clearPlaylist = () => { 
   return { type: MediaActions.CLEAR_PLAYLIST }
 }
 
@@ -43,6 +51,8 @@ export default {
   addToPlaylist,
   exportPlaylist,
   loadPlaylist,
+  loadPlaylistId,
+  saveNowPlayingId,
   fetchPlaylist,
   saveToken,
   saveUserId,

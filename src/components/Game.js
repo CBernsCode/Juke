@@ -1,14 +1,17 @@
 import React, { Component } from 'react'
 import { Header, Segment } from 'semantic-ui-react'
-import {Jumper} from './Jumper'
+import { TapGame } from './TapBeat'
 import { gameStart } from '../games/TabBeat'
 import { SurvivalGame } from './SurvivalGame'
-// import '../css/TabBeat'
 
 
 const GAME_STATUS = {
   notStated: "NOT_STARTED",
 }
+
+let date = new Date();
+let min = date.getMinutes();
+let diffGames = Math.floor(min) % 2;
 
 export default class Game extends Component {
   constructor(props) {
@@ -19,19 +22,17 @@ export default class Game extends Component {
     }
   }
 
-  componentDidMount() {
-
-  }
-
-  
   render() {
     return (
       <Segment inverted>
         <Header as='h1' textAlign='center'>
           Game
         </Header>
+        <div>
+          {diffGames ? <TapGame {...this.props} /> : <SurvivalGame  {...this.props}/>}
+        </div>
         {/* <Jumper /> */}
-        <SurvivalGame />
+        {/* <SurvivalGame {...this.props} /> */}
       </Segment>
     )
   }
