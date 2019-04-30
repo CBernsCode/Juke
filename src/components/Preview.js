@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Button, Popup, Grid } from 'semantic-ui-react'
 
-export const Preview = ({ id, preview_url, preview_art, selectedTrackId, inThePool, props }) => {
+export const Preview = ({ id, preview_url, preview_art, selectedTrackId, inThePool, selectFunc }) => {
   const [playing, setPlaying] = useState(false)
-
+  const hasPreview = (preview_url !== "")
   return (
-    <div 
+    <div
       style={{ backgroundImage: `url(${preview_art})` }}
       className="voting-song-preview">
       <video id={id} className="preview" name="media">
@@ -14,39 +14,59 @@ export const Preview = ({ id, preview_url, preview_art, selectedTrackId, inThePo
       <Grid>
         <Grid.Column width={10}>
           <Button.Group icon>
+          { hasPreview && 
             <Popup trigger={
               <Button
+                id="previewButton"
                 circular
                 color='black'
                 icon={playing ? 'pause' : 'play'}
                 onClick={() => {
+                  // TODO
+                  // reset all preview icons 
+                  
+                  // pause all other previews
                   let players = document.querySelectorAll('.preview')
                   players.forEach(player => {
                     player.pause()
                   })
 
                   if (playing) {
-                    document.getElementById(id).pause()
+                    let el = document.getElementById(id)
+                    !!el && el.pause()
                   } else {
-                    document.getElementById(id).play()
+                    let el = document.getElementById(id)
+                    !!el && el.play()
                   }
                   setPlaying(!playing)
                 }}>
               </Button>
             }
             content="Preview" />
-            { inThePool && 
+          }
+          { !hasPreview && 
             <Popup trigger={
               <Button
                 circular
                 color='black'
-                icon={'add'}
-                onClick={() => { props.mediaActions.saveSelectedTrackId(selectedTrackId) }}
-                >
+                icon="close"
+                onClick={() => {return}}>
               </Button>
             }
-            content="Add" />
+            content="No Preview Available" />
           }
+
+            {inThePool &&
+              <Popup trigger={
+                <Button
+                  circular
+                  color='black'
+                  icon={'add'}
+                  onClick={() => { selectFunc(selectedTrackId) }}>
+                </Button>
+              }
+                content="Add" />
+            }
           </Button.Group>
         </Grid.Column>
       </Grid>

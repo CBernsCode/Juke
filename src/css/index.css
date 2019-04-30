@@ -48,7 +48,7 @@ h1, h2, h3, h4 {
 .bid-input {
   margin: 15px 0;
   width: 8em;
-  height: 3em;
+  height: 4em;
 } 
 
 #voting-list .content{
@@ -64,6 +64,7 @@ h1, h2, h3, h4 {
 .song-info {
   float: right;
   margin-left: 1em;
+  max-width: 10em;
 }
 
 .row {
@@ -84,10 +85,6 @@ h1, h2, h3, h4 {
   color: #fff !important;
 }
 
-.ui.pointing.secondary.menu {
-  font-size: 120%;
-}
-
 a.item {
   color: #fff !important;
 }
@@ -96,14 +93,7 @@ a.item.active {
   color: #fff !important;
   border-color: #2ecc40 !important;
 }
-/*
-#game {
-  margin: auto;
-  height: 100%;
-  text-align: center;
-  border: 1px solid #eee; 
-}
-*/
+
 button {
   margin-top: 100px;
   font-family:Arial;
@@ -143,7 +133,7 @@ h2.friend-initial {
 }
 
 #voting-list {
-  height: 44vh;
+  height: 42vh;
 }
 
 #user-name {
@@ -199,5 +189,14 @@ div#search-results {
 
 h4#point-total {
   margin-top: -2em;
-  text-align: center;
+  margin-bottom: 0;
+}
+
+#friends {
+  height: 40vh;
+  overflow: auto;
+}
+
+.title-text {
+  font-family: 'Press Start 2P', cursive;
 }

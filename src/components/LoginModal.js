@@ -28,9 +28,11 @@ export default class LoginModal extends Component {
         defaultOpen={true}
       >
         <Modal.Content>
-          <h1>Juke</h1>
+          <h1 className="title-text">Juke</h1>
           <h2>Fight For Your Favorites</h2>
-          <h3>To continue, please log into Spotify.</h3>
+          <p>Where you can fight for your favorites, listen to music and play games.</p>
+          <br />
+          <h4>To continue, please log into Spotify.</h4>
           <Button
             color="green"
             size="huge"
@@ -38,7 +40,7 @@ export default class LoginModal extends Component {
             href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
               "%20"
             )}&response_type=token&show_dialog=true`}>
-            Login
+            Log Into Spotify
           </Button>
         </Modal.Content>
         <Modal.Actions>

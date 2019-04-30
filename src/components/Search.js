@@ -57,7 +57,7 @@ export default class SearchBar extends Component {
         }
       })
       .then(data => {
-        console.log(data)
+        // console.log(data)
         let s_results = data.tracks.items;
         let tracks = []
         for (let i = 0; i < s_results.length; i++) {
@@ -88,7 +88,7 @@ export default class SearchBar extends Component {
           preview_art={tracks.image} 
           selectedTrackId={tracks.key}
           inThePool={true} 
-          props={this.props} />
+          selectFunc={this.props.mediaActions.saveSelectedTrackId} />
         <List.Header>
           {`"${tracks.title}"`} <br />
           {tracks.description} <br />

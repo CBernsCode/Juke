@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Header, Segment } from 'semantic-ui-react'
 import {Jumper} from './Jumper'
 import { TapGame } from './TapBeat'
+import { gameStart } from '../games/TabBeat'
 import { SurvivalGame } from './SurvivalGame'
 
 
@@ -31,6 +32,8 @@ export default class Game extends Component {
         <div>
           {diffGames ? <TapGame/> : <SurvivalGame/>}
         </div>
+        {/* <Jumper /> */}
+        <SurvivalGame {...this.props} />
       </Segment>
     )
   }
