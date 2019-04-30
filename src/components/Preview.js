@@ -20,7 +20,7 @@ export const Preview = ({ id, preview_url, preview_art, selectedTrackId, inThePo
                 id="previewButton"
                 circular
                 color='black'
-                icon={playing ? 'pause' : 'play'}
+                icon={'play'}
                 onClick={() => {
                   // TODO
                   // reset all preview icons 
