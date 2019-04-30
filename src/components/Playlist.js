@@ -17,23 +17,21 @@ export default class Playlist extends Component {
     };
   }
 
-  componentDidMount() {
-    if (!!this.props.media.token) {
-      if(this.props.media.playlist_id !== "") {
-        var str = this.props.media.playlist_id
-        var playlist_id = str.split(":").pop()
-        this.handleRetrievePlaylists()
-        this.openPlaylist(playlist_id)
-      }
-      else {
-        this.handleRetrievePlaylists()
-      }
-    }
-  }
-
   componentDidUpdate(prevProps) {
-    if (this.props.media.token !== prevProps.media.token) {
+    const { media } = this.props
+    if (media.token !== prevProps.media.token) {
+      console.log("This surprisingly fired")
       this.handleRetrievePlaylists()
+    }
+    if (!!media.playlist_id && media.playlist_id !== prevProps.media.playlist_id) {
+      try {
+        var str = media.playlist_id
+        var playlist_id = str.split(":").pop()
+        // this.handleRetrievePlaylists()
+        this.openPlaylist(playlist_id)
+      } catch (error) {
+        console.error("Unable to parse playlist ID" + error)
+      }
     }
   }
 
@@ -47,66 +45,21 @@ export default class Playlist extends Component {
         "Content-Type": "application/json",
       },
     })
-    .then(response => {
-      if (response.ok) {
-        return response.json()
-      }
-      else {
-        throw new Error("Something went wrong...")
-      }
-    })
-    .then(data => {
-      this.setState({ playlists: data })
-    })
-    .catch(error => {
-      this.setState({ error })
-      console.log(error)
-    });
-  }
-
-  displayCurrentPlaylist = () => {
-    const { token } = this.props.media 
-    const { mediaActions } = this.props
-
-    // https://developer.spotify.com/documentation/web-api/reference/player/get-the-users-currently-playing-track/
-    fetch("https://api.spotify.com/v1/me/player/currently-playing", {
-      method: "GET",
-      headers: {
-        authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    })
-    .then(response => {
-      if (response.ok) {
-        return response.json()
-      }
-      else {
-        throw new Error("Something went wrong...")
-      }
-    })
-    .then(data => {
-      if (data.context.type === "playlist") {
-        mediaActions.loadPlaylist(data.context.uri)
-        this.setState({
-          current_playlist_id: data.context.uri,
-        })
-      }
-      else {
-        mediaActions.loadPlaylist("")
-      }
-    })
-    .catch(error => {
-      this.setState({ error })
-      console.log(error)
-    })
-    .then(() => {
-      if (this.state.current_playlist_id !== "") {
-        this.openPlaylist(this.state.current_playlist_id)
-      }
-      else {
-        this.handleRetrievePlaylists()
-      }
-    })
+      .then(response => {
+        if (response.ok) {
+          return response.json()
+        }
+        else {
+          throw new Error("Something went wrong...")
+        }
+      })
+      .then(data => {
+        this.setState({ playlists: data })
+      })
+      .catch(error => {
+        this.setState({ error })
+        console.log(error)
+      });
   }
 
   openPlaylist = (id) => {
@@ -120,28 +73,28 @@ export default class Playlist extends Component {
         "Content-Type": "application/json",
       },
     })
-    .then(response => {
-      if (response.ok) {
-        return response.json()
-      }
-      else {
-        throw new Error("Something went wrong...")
-      }
-    })
-    .then(data => {
-      mediaActions.loadPlaylist(data)
-      mediaActions.loadPlaylistId(id)
-      this.setState({
-        current_playlist_id: id,
-        playlist: data,
-        playlist_tracks: data.tracks,
-        trackView: true,
+      .then(response => {
+        if (response.ok) {
+          return response.json()
+        }
+        else {
+          throw new Error("Something went wrong...")
+        }
       })
-    })
-    .catch(error => {
-      this.setState({ error })
-      console.log(error)
-    });
+      .then(data => {
+        mediaActions.loadPlaylist(data)
+        mediaActions.loadPlaylistId(id)
+        this.setState({
+          current_playlist_id: id,
+          playlist: data,
+          playlist_tracks: data.tracks,
+          trackView: true,
+        })
+      })
+      .catch(error => {
+        this.setState({ error })
+        console.log(error)
+      });
   }
 
   addSongToPlaylist = () => {
@@ -159,22 +112,21 @@ export default class Playlist extends Component {
         "uris": [track_uri],
       }),
     })
-    .then(response => {
-      if (response.ok) {
-        return response.json()
-      }
-      else {
-        debugger
-        throw new Error("Something went wrong...")
-      }
-    })
-    .then(data => {
-      console.log("added track to playlist")
-    })
-    .catch(error => {
-      this.setState({ error })
-      console.log(error)
-    });
+      .then(response => {
+        if (response.ok) {
+          return response.json()
+        }
+        else {
+          throw new Error("Something went wrong...")
+        }
+      })
+      .then(data => {
+        console.log("added track to playlist")
+      })
+      .catch(error => {
+        this.setState({ error })
+        console.log(error)
+      });
   }
 
   handleInputChange = (e) => {
@@ -199,31 +151,29 @@ export default class Playlist extends Component {
           "collaborative": true,
         }),
       })
-      .then(response => {
-        if (response.ok) {
-          return response.json()
-        }
-        else {
-          throw new Error("Something went wrong...")
-        }
-      })
-      .then(data => {
-        this.setState({
-          trackView: false,
+        .then(response => {
+          if (response.ok) {
+            return response.json()
+          }
+          else {
+            throw new Error("Something went wrong...")
+          }
         })
-        // Rerender playlist view to display the new playlist
-        this.handleRetrievePlaylists()
-      })
-      .catch(error => {
-        this.setState({ error })
-        console.log(error)
-      });
+        .then(data => {
+          this.setState({
+            trackView: false,
+          })
+          // Rerender playlist view to display the new playlist
+          this.handleRetrievePlaylists()
+        })
+        .catch(error => {
+          this.setState({ error })
+          console.log(error)
+        });
     }
     else {
       console.log("Invalid playlist name")
     }
-
-
   }
 
   // Make playlist collaborative
@@ -240,7 +190,7 @@ export default class Playlist extends Component {
       isPublic = true
       isCollaborative = false
     }
-    
+
     // https://developer.spotify.com/documentation/web-api/reference-beta/#endpoint-change-playlist-details
     fetch("https://api.spotify.com/v1/playlists/" + id, {
       method: "PUT",
@@ -260,7 +210,7 @@ export default class Playlist extends Component {
         },
       })
     })
-    
+
   }
 
   // Note: This does not actually delete the playlist as there is no such endpoint in the API
@@ -277,16 +227,16 @@ export default class Playlist extends Component {
         "Content-Type": "application/json",
       }
     })
-    .then(() => {
-      // take the user back to the playlist view and update the playlists
-      this.setState({ 
-        trackView: false, 
-        playlist: null, 
-        playlists: null,
-        deleteConfirmOpen: false,
+      .then(() => {
+        // take the user back to the playlist view and update the playlists
+        this.setState({
+          trackView: false,
+          playlist: null,
+          playlists: null,
+          deleteConfirmOpen: false,
+        })
+        this.handleRetrievePlaylists()
       })
-      this.handleRetrievePlaylists()
-    })
   }
 
   listPlaylistItem = (playlist) => (
@@ -328,13 +278,13 @@ export default class Playlist extends Component {
       },
       body: JSON.stringify({
         "context_uri": `spotify:playlist:${this.state.current_playlist_id}`,
-        "offset": {"uri": `spotify:track:${trackId}`}
+        "offset": { "uri": `spotify:track:${trackId}` }
       }),
     })
-    .catch(error => {
-      this.setState({ error })
-      console.log(error)
-    });
+      .catch(error => {
+        this.setState({ error })
+        console.log(error)
+      });
   }
 
   openDeleteConfirm = () => this.setState({ deleteConfirmOpen: true })
@@ -356,7 +306,7 @@ export default class Playlist extends Component {
           <Grid>
             <Grid.Row>
               <Grid.Column width={8}>
-                <Input fluid onChange={this.handleInputChange} placeholder="New Playlist Name..."/>
+                <Input fluid onChange={this.handleInputChange} placeholder="New Playlist Name..." />
               </Grid.Column>
               <Grid.Column width={8}>
                 <Button.Group fluid>
@@ -372,7 +322,7 @@ export default class Playlist extends Component {
             </Grid.Row>
           </Grid>
         ]}
-        {this.state.playlists && this.state.trackView && 
+        {this.state.playlists && this.state.trackView &&
           <List id="track-names" divided inverted ordered>
             {
               this.state.playlist_tracks.items
@@ -410,7 +360,7 @@ export default class Playlist extends Component {
               onCancel={this.closeDeleteConfirm} 
               onConfirm={() => this.deletePlaylist(this.state.current_playlist_id)} />
         </Button.Group> */
-      }
+        }
       </Segment>
     );
   }

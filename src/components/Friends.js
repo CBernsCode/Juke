@@ -23,7 +23,7 @@ export default class Friends extends Component {
     let d = new Date()
     friendActions.addFriend(acct.uid, {
       name: this.state.name || '',
-      uid: this.state.uid || '',
+      uid: this.state.uid || 'anon',
       note: this.state.note || '',
       added: d.toLocaleDateString(),
     })

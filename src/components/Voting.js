@@ -74,23 +74,25 @@ export default class Voting extends Component {
       firebase.ref(`/session/${sesh.session}/songs`).once('value', (snapshot) => {
         let snap = snapshot.val()
         if (!!snap) {
-          this.setState({ songs: snap })
+          this.resyncList()
         }
       })
     }
 
     if (sesh.session !== prevProps.sesh.session) {
       this.detachFromSession()
-      firebase.ref(`/session/${sesh.session}/songs`).once('value', (snapshot) => {
-        let snap = snapshot.val()
-        if (!!snap) {
-          this.setState({ songs: snap })
-        }
-      })
+      this.resyncList()
+      // firebase.ref(`/session/${sesh.session}/songs`).once('value', (snapshot) => {
+      //   let snap = snapshot.val()
+      //   if (!!snap) {
+      //     // this.setState({ songs: snap })
+      //   }
+      // })
       firebase.ref(`/session/${sesh.session}/songs`).on('value', (snapshot) => {
         let snap = snapshot.val()
         if (!!snap) {
-          this.setState({ songs: snap })
+          this.resyncList()
+          // this.setState({ songs: snap })
         }
       })
     }
@@ -265,7 +267,7 @@ export default class Voting extends Component {
         className="" size="mini" placeholder='Session' >
       </Input>
       <br />
-      or
+      <p style={{margin: 10}}  >or</p>
       <br />
       <Button onClick={() => this.startNewSession()}>Start New Session</Button>
     </Segment>
